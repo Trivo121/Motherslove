@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import unique1 from '../assets/Unique1.PNG';
 import unique2 from '../assets/unique2.PNG';
@@ -79,6 +80,7 @@ const PrimaryButton = ({ children, className = '', ...props }) => (
 const HomePage = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [accountOpen, setAccountOpen] = useState(false);
+    const navigate = useNavigate();
 
     // Mount fade-in approximates the "in" half of the site's out-in page transition
     useEffect(() => {
@@ -131,9 +133,9 @@ const HomePage = () => {
                     </div>
                 </div>
 
-                <a href="#" className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
+                <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
                     MOTHER'S LOVE
-                </a>
+                </button>
 
                 <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
                     <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
@@ -146,7 +148,7 @@ const HomePage = () => {
                             <a href="#" className="block px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">My Orders</a>
                         </div>
                     )}
-                    <button aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
+                    <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
                         <BagIcon size={20} />
                         <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
                     </button>
