@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
-import unique1 from '../assets/Unique1.PNG';
-import unique2 from '../assets/unique2.PNG';
-import unique3 from '../assets/unique3.PNG';
-import unique4 from '../assets/unique 4.PNG';
-import uniqCover from '../assets/uniq cover.PNG';
-import formalCover from '../assets/formal cover.JPEG';
+import unique1 from '../assets/unique/Unique1.PNG';
+import unique2 from '../assets/unique/unique2.PNG';
+import unique3 from '../assets/unique/unique3.PNG';
+import unique4 from '../assets/unique/unique 4.PNG';
+import uniqCover from '../assets/unique/uniq cover.PNG';
+import formalCover from '../assets/formal/formal cover.JPEG';
 
 /* ---------- Inline icons (no external icon package) ---------- */
 const Icon = ({ children, size = 20, className = '' }) => (

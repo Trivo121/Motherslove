@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
+import { PRODUCTS } from '../data/products.js';
 
 /* =========================================================================
    Note on the filename: this is the "All Products" catalog/shop page from
@@ -84,61 +85,10 @@ function FilterPill({ label, active, onClick }) {
     );
 }
 
-/* ---------- Product data (swap images/copy for your own catalog) ---------- */
-const PRODUCTS = [
-    {
-        name: 'Classic Crew Neck Tee',
-        color: 'White',
-        price: '₹550.00',
-        category: 'formal',
-        badge: 'Best Seller',
-        img: 'https://images.unsplash.com/photo-1620799139652-715e4d5b232d?q=80&w=900&auto=format&fit=crop',
-    },
-    {
-        name: 'Organic Cotton Tee',
-        color: 'Sand',
-        price: '₹650.00',
-        category: 'formal',
-        badge: '',
-        img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=900&auto=format&fit=crop',
-    },
-    {
-        name: 'Polo Collar Tee',
-        color: 'White',
-        price: '₹720.00',
-        category: 'formal',
-        badge: '',
-        img: 'https://images.unsplash.com/photo-1671438118097-479e63198629?q=80&w=900&auto=format&fit=crop',
-    },
-    {
-        name: 'Striped Boatneck Tee',
-        color: 'Navy',
-        price: '₹680.00',
-        category: 'unique',
-        badge: 'New',
-        img: 'https://images.unsplash.com/photo-1660924173457-5b9198c9c867?q=80&w=900&auto=format&fit=crop',
-    },
-    {
-        name: 'Relaxed Jersey Tee',
-        color: 'Olive',
-        price: '₹600.00',
-        category: 'unique',
-        badge: '',
-        img: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=900&auto=format&fit=crop',
-    },
-    {
-        name: 'Oversized Drop-Shoulder Tee',
-        color: 'Charcoal',
-        price: '₹590.00',
-        category: 'unique',
-        badge: '',
-        img: 'https://images.unsplash.com/photo-1434389678232-034875088f55?q=80&w=900&auto=format&fit=crop',
-    },
-];
 
 function ProductCard({ product }) {
     return (
-        <a href="#" className="group block">
+        <Link to={`/product/${product.id}`} className="group block">
             <div className="relative aspect-[3/4] overflow-hidden bg-[#FDF6F3]">
                 {product.badge && (
                     <span className="absolute top-3 left-3 z-10 bg-[#A96142] text-white text-xs font-avenir tracking-wide px-3 py-1">
@@ -154,7 +104,7 @@ function ProductCard({ product }) {
             <h3 className="mt-4 font-avenir text-[#2D3329] text-base">{product.name}</h3>
             <p className="font-avenir text-sm text-[#737373]">{product.color}</p>
             <p className="font-avenir text-[#A96142] mt-1">{product.price}</p>
-        </a>
+        </Link>
     );
 }
 
