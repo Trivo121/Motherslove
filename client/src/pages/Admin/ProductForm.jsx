@@ -90,6 +90,7 @@ export default function AdminProductForm() {
         name: '', price: '', description: '',
         sizes: [], imagePreview: null,
         published: true, tags: [], stock: '',
+        category: 'unique',
     };
 
     const [form, setForm] = useState(EMPTY_FORM);
@@ -112,6 +113,7 @@ export default function AdminProductForm() {
             published: product.published,
             tags: [...product.tags],
             stock: String(product.stock),
+            category: product.category || 'unique',
         });
     }, [isEditing, productId]);
 
@@ -236,7 +238,7 @@ export default function AdminProductForm() {
                         />
                     </Field>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <Field label="Price (₹)" required error={errors.price}>
                             <TextInput
                                 type="number"
@@ -255,6 +257,21 @@ export default function AdminProductForm() {
                                 placeholder="e.g. 20"
                                 min="0"
                             />
+                        </Field>
+                        <Field label="Category" required>
+                            <div className="relative">
+                                <select
+                                    value={form.category}
+                                    onChange={(e) => set('category', e.target.value)}
+                                    className="w-full px-4 py-2.5 border border-[#2D3329]/20 font-avenir text-sm text-[#2D3329] focus:outline-none focus:border-[#A96142] transition-colors bg-white appearance-none"
+                                >
+                                    <option value="unique">Unique Prints</option>
+                                    <option value="formal">Formal Prints</option>
+                                </select>
+                                <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] pointer-events-none">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
                         </Field>
                     </div>
 

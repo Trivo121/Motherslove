@@ -7,6 +7,7 @@ import unique3 from '../assets/unique/unique3.PNG';
 import unique4 from '../assets/unique/unique 4.PNG';
 import uniqCover from '../assets/unique/uniq cover.PNG';
 import formalCover from '../assets/formal/formal cover.JPEG';
+import { PRODUCTS } from '../data/products.js';
 
 /* ---------- Inline icons (no external icon package) ---------- */
 const Icon = ({ children, size = 20, className = '' }) => (
@@ -87,25 +88,22 @@ const HomePage = () => {
         setIsVisible(true);
     }, []);
 
-    const navLinks = ['Home', 'Women', 'Men', 'Shop', 'About'];
+    const navLinks = ['Home', 'Shop', 'About', 'Contact'];
 
     const categories = [
         {
             label: 'Shop Unique Prints',
             img: uniqCover,
+            target: 'unique',
         },
         {
             label: 'Shop Formal Prints',
             img: formalCover,
+            target: 'formal',
         },
     ];
 
-    const products = [
-        { name: 'Vanguard Charge Graphic Tee', price: '₹600', tag: 'NEW', img: unique1 },
-        { name: 'Golden Dynasty Graphic Tee', price: '₹600', tag: '', img: unique2 },
-        { name: 'Celestial Scorpio Graphic Tee', price: '₹600', tag: 'NEW', img: unique3 },
-        { name: 'Imperial Tribute Graphic Tee', price: '₹600', tag: '', img: unique4 },
-    ];
+    const featuredProducts = PRODUCTS.slice(0, 4);
 
     return (
         <div className={`min-h-screen bg-white transition-opacity duration-700 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
@@ -125,11 +123,14 @@ const HomePage = () => {
                 <div className="flex items-center gap-6">
                     <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
                     <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                        {navLinks.map((link, i) => (
-                            <a key={i} onClick={(e) => { e.preventDefault(); if (link === 'Shop') navigate('/shop'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
-                                {link}
-                            </a>
-                        ))}
+                        {navLinks.map((link, i) => {
+                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
+                            return (
+                                <a key={i} onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
+                                    {link}
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -145,7 +146,7 @@ const HomePage = () => {
                     {accountOpen && (
                         <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
                             <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
-                            <a href="#" className="block px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">My Orders</a>
+                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
                         </div>
                     )}
                     <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
@@ -164,13 +165,13 @@ const HomePage = () => {
                 <p className="font-avenir font-light text-xl text-[#737373] max-w-xl mx-auto mb-9">
                     Mindfully crafted essentials, designed to last a lifetime.
                 </p>
-                <PrimaryButton>Shop Now</PrimaryButton>
+                <PrimaryButton onClick={() => navigate('/shop')}>Shop Now</PrimaryButton>
             </header>
 
             {/* Split grid - Women / Men */}
             <section className="grid grid-cols-1 md:grid-cols-2">
                 {categories.map((cat) => (
-                    <a key={cat.label} href="#" className="group relative h-[480px] md:h-[620px] overflow-hidden block bg-[#737373]/20">
+                    <div key={cat.label} onClick={() => navigate('/shop', { state: { category: cat.target } })} className="group relative h-[480px] md:h-[620px] overflow-hidden block bg-[#737373]/20 cursor-pointer">
                         <img
                             src={cat.img}
                             alt={cat.label}
@@ -181,7 +182,7 @@ const HomePage = () => {
                             {cat.label}
                             <ArrowIcon size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </div>
-                    </a>
+                    </div>
                 ))}
             </section>
 
@@ -212,17 +213,17 @@ const HomePage = () => {
             <section className="px-6 md:px-10 py-20">
                 <div className="flex items-end justify-between mb-10">
                     <h2 className="font-poppins font-extralight text-3xl text-[#2D3329]">New Arrivals</h2>
-                    <a href="#" className="font-avenir text-sm text-[#A96142] hover:underline flex items-center gap-1">
+                    <button onClick={() => navigate('/shop')} className="font-avenir text-sm text-[#A96142] hover:underline flex items-center gap-1 cursor-pointer">
                         View All <ArrowIcon size={14} />
-                    </a>
+                    </button>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-                    {products.map((p) => (
-                        <div key={p.name} className="group cursor-pointer">
+                    {featuredProducts.map((p) => (
+                        <div key={p.id} onClick={() => navigate(`/product/${p.id}`)} className="group cursor-pointer">
                             <div className="relative h-72 overflow-hidden bg-[#FDF6F3] mb-3">
                                 <img src={p.img} alt={p.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                {p.tag && (
-                                    <span className="absolute top-3 left-3 bg-black text-white text-[10px] tracking-wider px-2 py-1 font-avenir">{p.tag}</span>
+                                {p.badge && (
+                                    <span className="absolute top-3 left-3 bg-black text-white text-[10px] tracking-wider px-2 py-1 font-avenir">{p.badge}</span>
                                 )}
                             </div>
                             <h3 className="font-avenir text-sm text-[#2D3329]">{p.name}</h3>
@@ -258,9 +259,9 @@ const HomePage = () => {
                     <div>
                         <h4 className="font-avenir text-xs tracking-widest uppercase mb-4 text-[#FDF6F3]/60">Shop</h4>
                         <ul className="space-y-2 font-avenir font-light text-sm">
-                            <li><a href="#" className="hover:text-[#A96142]">Women</a></li>
-                            <li><a href="#" className="hover:text-[#A96142]">Men</a></li>
-                            <li><a href="#" className="hover:text-[#A96142]">New Arrivals</a></li>
+                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Unique Prints</button></li>
+                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Formal Prints</button></li>
+                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">New Arrivals</button></li>
                         </ul>
                     </div>
                     <div>

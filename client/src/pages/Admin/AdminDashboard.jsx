@@ -172,7 +172,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Stat grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <StatCard
                     icon={BagIcon}
                     label="Orders today"
@@ -186,13 +186,6 @@ export default function AdminDashboard() {
                     value={stats.pendingOrders}
                     delta={stats.pendingDelta}
                     trendUp={false}
-                />
-                <StatCard
-                    icon={RupeeIcon}
-                    label="Revenue this week"
-                    value={stats.revenue}
-                    delta={stats.revenueDelta}
-                    trendUp={stats.revenueUp}
                 />
                 <StatCard
                     icon={BoxIcon}

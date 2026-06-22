@@ -11,6 +11,8 @@ import AdminOrderDetails from './pages/Admin/AdminOrderDetails.jsx'
 import AdminProducts from './pages/Admin/Products.jsx'
 import AdminProductForm from './pages/Admin/ProductForm.jsx'
 
+import CheckoutPage from './pages/Checkout.jsx'
+
 function App() {
   return (
     <>
@@ -18,6 +20,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         
         {/* Admin Routes (No auth protection yet for previewing purposes) */}

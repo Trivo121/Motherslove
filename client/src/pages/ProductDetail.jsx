@@ -21,7 +21,7 @@ const MinusIcon = (p) => <Icon {...p}><path d="M5 12h14" /></Icon>;
 function Nav({ cartCount = 0 }) {
     const [accountOpen, setAccountOpen] = useState(false);
     const navigate = useNavigate();
-    const navLinks = ['Home', 'Women', 'Men', 'Shop', 'About'];
+    const navLinks = ['Home', 'Shop', 'About', 'Contact'];
     return (
         <>
             <div className="bg-[#FDF6F3] text-center py-2 text-xs md:text-sm font-avenir text-[#2D3329] tracking-wide">
@@ -31,11 +31,14 @@ function Nav({ cartCount = 0 }) {
                 <div className="flex items-center gap-6">
                     <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
                     <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                        {navLinks.map((link) => (
-                            <a key={link} onClick={(e) => { e.preventDefault(); if (link === 'Shop') navigate('/shop'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
-                                {link}
-                            </a>
-                        ))}
+                        {navLinks.map((link) => {
+                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
+                            return (
+                                <a key={link} onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
+                                    {link}
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
                 <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
@@ -47,8 +50,8 @@ function Nav({ cartCount = 0 }) {
                     </button>
                     {accountOpen && (
                         <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
-                            <a href="#" className="block px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</a>
-                            <a href="#" className="block px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">My Orders</a>
+                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
+                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
                         </div>
                     )}
                     <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
@@ -251,7 +254,7 @@ export default function ProductPage() {
                         >
                             Add to Cart
                         </button>
-                        <button className="w-full bg-[#2D3329] text-white font-avenir py-3 hover:bg-[#3f4a39] transition-colors">
+                        <button onClick={() => routerNavigate('/checkout')} className="w-full bg-[#2D3329] text-white font-avenir py-3 hover:bg-[#3f4a39] transition-colors">
                             Buy Now
                         </button>
                     </div>

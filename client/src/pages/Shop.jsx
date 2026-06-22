@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { PRODUCTS } from '../data/products.js';
 
@@ -25,7 +25,7 @@ const ChatIcon = (props) => <Icon {...props}><path d="M21 11.5a8.38 8.38 0 01-.9
 function Nav() {
     const [accountOpen, setAccountOpen] = useState(false);
     const navigate = useNavigate();
-    const navLinks = ['Home', 'Women', 'Men', 'Shop', 'About'];
+    const navLinks = ['Home', 'Shop', 'About', 'Contact'];
 
     return (
         <>
@@ -36,11 +36,14 @@ function Nav() {
                 <div className="flex items-center gap-6">
                     <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
                     <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                        {navLinks.map((link) => (
-                            <a key={link} onClick={(e) => { e.preventDefault(); if (link === 'Shop') navigate('/shop'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
-                                {link}
-                            </a>
-                        ))}
+                        {navLinks.map((link) => {
+                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
+                            return (
+                                <a key={link} onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
+                                    {link}
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -55,8 +58,8 @@ function Nav() {
                     </button>
                     {accountOpen && (
                         <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
-                            <a href="#" className="block px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</a>
-                            <a href="#" className="block px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">My Orders</a>
+                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
+                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
                         </div>
                     )}
                     <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
@@ -80,37 +83,52 @@ function FilterPill({ label, active, onClick }) {
                 }`}
         >
             {label}
-            <ChevronIcon size={14} />
         </button>
     );
 }
 
 
 function ProductCard({ product }) {
+    const navigate = useNavigate();
     return (
-        <Link to={`/product/${product.id}`} className="group block">
-            <div className="relative aspect-[3/4] overflow-hidden bg-[#FDF6F3]">
-                {product.badge && (
-                    <span className="absolute top-3 left-3 z-10 bg-[#A96142] text-white text-xs font-avenir tracking-wide px-3 py-1">
-                        {product.badge}
-                    </span>
-                )}
-                <img
-                    src={product.img}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-            </div>
-            <h3 className="mt-4 font-avenir text-[#2D3329] text-base">{product.name}</h3>
-            <p className="font-avenir text-sm text-[#737373]">{product.color}</p>
-            <p className="font-avenir text-[#A96142] mt-1">{product.price}</p>
-        </Link>
+        <div className="group block relative">
+            <Link to={`/product/${product.id}`} className="block">
+                <div className="relative aspect-[3/4] overflow-hidden bg-[#FDF6F3]">
+                    {product.badge && (
+                        <span className="absolute top-3 left-3 z-10 bg-[#A96142] text-white text-xs font-avenir tracking-wide px-3 py-1">
+                            {product.badge}
+                        </span>
+                    )}
+                    <img
+                        src={product.img}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                </div>
+                <h3 className="mt-4 font-avenir text-[#2D3329] text-base truncate">{product.name}</h3>
+                <p className="font-avenir text-sm text-[#737373]">{product.color}</p>
+                <p className="font-avenir text-[#A96142] mt-1">{product.price}</p>
+            </Link>
+            <button 
+                onClick={(e) => { e.preventDefault(); navigate('/checkout'); }}
+                className="mt-3 w-full bg-white border border-[#2D3329] text-[#2D3329] font-avenir py-2 text-sm hover:bg-[#2D3329] hover:text-white transition-colors"
+            >
+                Buy Now
+            </button>
+        </div>
     );
 }
 
 /* ---------- Page ---------- */
 export default function AllProductsPage() {
-    const [activeFilter, setActiveFilter] = useState('all');
+    const location = useLocation();
+    const [activeFilter, setActiveFilter] = useState(location.state?.category || 'all');
+
+    React.useEffect(() => {
+        if (location.state?.category) {
+            setActiveFilter(location.state.category);
+        }
+    }, [location.state?.category]);
 
     const filters = [
         { key: 'all', label: 'All Products' },
