@@ -1,7 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/Home.jsx'
 import AuthModal from './pages/Login.jsx'
-import AllProductsPage from './pages/Cart.jsx'
+import ShopPage from './pages/Shop.jsx'
+import CartPage from './pages/Cart.jsx'
 import ProductPage from './pages/ProductDetail.jsx'
 import AdminLayout from './pages/Admin/Adminlayout.jsx'
 import AdminDashboard from './pages/Admin/AdminDashboard.jsx'
@@ -15,7 +16,8 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/cart" element={<AllProductsPage />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         
         {/* Admin Routes (No auth protection yet for previewing purposes) */}

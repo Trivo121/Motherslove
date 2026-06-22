@@ -32,7 +32,7 @@ function Nav({ cartCount = 0 }) {
                     <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
                     <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
                         {navLinks.map((link) => (
-                            <a key={link} href="#" className={`hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
+                            <a key={link} onClick={(e) => { e.preventDefault(); if (link === 'Shop') navigate('/shop'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
                                 {link}
                             </a>
                         ))}

@@ -5,4 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   assetsInclude: ['**/*.PNG', '**/*.JPEG'],
+  server: {
+    allowedHosts: true, // Allows forwarded hosts like Vercel tunnels
+  }
 })
