@@ -113,10 +113,7 @@ const HomePage = () => {
         .font-avenir { font-family: 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif; }
       `}</style>
 
-            {/* Utility bar */}
-            <div className="bg-[#FDF6F3] text-[#2D3329] text-sm font-avenir font-light py-2.5 text-center tracking-wide border-b border-[#2D3329]/10">
-                Free Delivery Over $75&nbsp;&nbsp;|&nbsp;&nbsp;Free Returns
-            </div>
+
 
             {/* Nav: logo + links left, brand centered, account/cart right */}
             <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white sticky top-0 z-40 border-b border-[#2D3329]/5">
