@@ -359,6 +359,7 @@ export default function AuthModal() {
         }
 
         close();
+        window.location.href = '/';
     }
 
     async function handleForgotPassword(e) {
@@ -387,7 +388,10 @@ export default function AuthModal() {
 
     async function handleOAuth(provider) {
         setError('');
-        const { error: oauthError } = await supabase.auth.signInWithOAuth({ provider });
+        const { error: oauthError } = await supabase.auth.signInWithOAuth({ 
+            provider,
+            options: { redirectTo: window.location.origin }
+        });
         if (oauthError) setError(oauthError.message);
     }
 

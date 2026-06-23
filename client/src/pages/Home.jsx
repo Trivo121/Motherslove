@@ -8,6 +8,7 @@ import unique4 from '../assets/unique/unique 4.PNG';
 import uniqCover from '../assets/unique/uniq cover.PNG';
 import formalCover from '../assets/formal/formal cover.JPEG';
 import { PRODUCTS } from '../data/products.js';
+import Navbar from '../components/common/Navbar.jsx';
 
 /* ---------- Inline icons (no external icon package) ---------- */
 const Icon = ({ children, size = 20, className = '' }) => (
@@ -26,17 +27,7 @@ const Icon = ({ children, size = 20, className = '' }) => (
     </svg>
 );
 
-const BagIcon = (props) => (
-    <Icon {...props}>
-        <path d="M7 8h10l1 12H6L7 8z" />
-        <path d="M9 8a3 3 0 0 1 6 0" />
-    </Icon>
-);
-const ChevronIcon = (props) => (
-    <Icon {...props}>
-        <path d="M5 8l7 7 7-7" />
-    </Icon>
-);
+
 const ChatIcon = (props) => (
     <Icon {...props}>
         <path d="M4 5h16v10H10l-5 4v-4H4V5z" />
@@ -80,7 +71,6 @@ const PrimaryButton = ({ children, className = '', ...props }) => (
 
 const HomePage = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [accountOpen, setAccountOpen] = useState(false);
     const navigate = useNavigate();
 
     // Mount fade-in approximates the "in" half of the site's out-in page transition
@@ -88,7 +78,7 @@ const HomePage = () => {
         setIsVisible(true);
     }, []);
 
-    const navLinks = ['Home', 'Shop', 'About', 'Contact'];
+
 
     const categories = [
         {
@@ -115,43 +105,8 @@ const HomePage = () => {
 
 
 
-            {/* Nav: logo + links left, brand centered, account/cart right */}
-            <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white sticky top-0 z-40 border-b border-[#2D3329]/5">
-                <div className="flex items-center gap-6">
-                    <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
-                    <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                        {navLinks.map((link, i) => {
-                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
-                            return (
-                                <a key={i} onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
-                                    {link}
-                                </a>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
-                    MOTHER'S LOVE
-                </button>
-
-                <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
-                    <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
-                        Account
-                        <ChevronIcon size={14} className={`transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {accountOpen && (
-                        <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
-                        </div>
-                    )}
-                    <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
-                        <BagIcon size={20} />
-                        <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
-                    </button>
-                </div>
-            </nav>
+            {/* Navbar */}
+            <Navbar />
 
             {/* Hero */}
             <header className="px-6 md:px-10 py-16 text-center">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.PNG';
+import Navbar from '../components/common/Navbar.jsx';
 import { PRODUCTS } from '../data/products.js';
 
 /* ---------- Icons ---------- */
@@ -17,52 +18,7 @@ const ChatIcon = (p) => <Icon {...p}><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5
 const PlusIcon = (p) => <Icon {...p}><path d="M12 5v14M5 12h14" /></Icon>;
 const MinusIcon = (p) => <Icon {...p}><path d="M5 12h14" /></Icon>;
 
-/* ---------- Nav ---------- */
-function Nav({ cartCount = 0 }) {
-    const [accountOpen, setAccountOpen] = useState(false);
-    const navigate = useNavigate();
-    const navLinks = ['Home', 'Shop', 'About', 'Contact'];
-    return (
-        <>
-            <div className="bg-[#FDF6F3] text-center py-2 text-xs md:text-sm font-avenir text-[#2D3329] tracking-wide">
-                Free Delivery Over $75&nbsp;&nbsp;|&nbsp;&nbsp;Free Returns
-            </div>
-            <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white sticky top-0 z-40 border-b border-[#2D3329]/5">
-                <div className="flex items-center gap-6">
-                    <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
-                    <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                        {navLinks.map((link) => {
-                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
-                            return (
-                                <a key={link} onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
-                                    {link}
-                                </a>
-                            );
-                        })}
-                    </div>
-                </div>
-                <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
-                    MOTHER'S LOVE
-                </button>
-                <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
-                    <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
-                        Account<ChevronIcon size={14} className={`transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {accountOpen && (
-                        <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
-                        </div>
-                    )}
-                    <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
-                        <BagIcon size={20} />
-                        <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
-                    </button>
-                </div>
-            </nav>
-        </>
-    );
-}
+
 
 /* ---------- Accordion row ---------- */
 function Accordion({ title, children, defaultOpen = false }) {
@@ -152,7 +108,7 @@ export default function ProductPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Nav cartCount={cartCount} />
+            <Navbar cartCount={cartCount} />
 
             {/* Breadcrumb + Prev/Next */}
             <div className="px-6 md:px-10 py-5 flex items-center justify-between border-b border-[#2D3329]/8">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.PNG';
+import Navbar from '../components/common/Navbar.jsx';
 
 /* =========================================================================
    ROUTER — add to your App.jsx:
@@ -113,61 +114,7 @@ const ShieldIcon = (p) => <Icon {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6
 const TruckIcon = (p) => <Icon {...p}><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></Icon>;
 const RefreshIcon = (p) => <Icon {...p}><path d="M23 4v6h-6M1 20v-6h6" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" /></Icon>;
 
-/* ---------- Nav (identical to the rest of the site) ---------- */
-function Nav({ cartCount }) {
-    const [accountOpen, setAccountOpen] = useState(false);
-    const navigate = useNavigate();
-    const navLinks = ['Home', 'Shop', 'About', 'Contact'];
 
-    return (
-        <>
-            <div className="bg-[#FDF6F3] text-center py-2 text-xs md:text-sm font-avenir text-[#2D3329] tracking-wide">
-                Free Delivery Over ₹{FREE_SHIPPING_THRESHOLD.toLocaleString('en-IN')}&nbsp;&nbsp;|&nbsp;&nbsp;Free Returns
-            </div>
-            <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white sticky top-0 z-40 border-b border-[#2D3329]/5">
-                <div className="flex items-center gap-6">
-                    <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
-                    <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                        {navLinks.map((link) => {
-                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
-                            return (
-                                <a key={link}
-                                    onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }}
-                                    href="#"
-                                    className="cursor-pointer hover:text-[#A96142] transition-colors">
-                                    {link}
-                                </a>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
-                    MOTHER'S LOVE
-                </button>
-
-                <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
-                    <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
-                        Account
-                        <ChevronIcon size={14} className={`transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {accountOpen && (
-                        <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
-                        </div>
-                    )}
-                    <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
-                        <BagIcon size={20} />
-                        <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                            {cartCount}
-                        </span>
-                    </button>
-                </div>
-            </nav>
-        </>
-    );
-}
 
 /* ---------- Reusable form components ---------- */
 function InputField({ label, required, error, id, ...props }) {
@@ -394,7 +341,7 @@ export default function CheckoutPage() {
     if (placed) {
         return (
             <div className="min-h-screen bg-[#F8F7F5] font-avenir flex flex-col">
-                <Nav cartCount={cartCount} />
+                <Navbar cartCount={cartCount} />
                 <div className="flex-1 flex items-center justify-center px-6 py-24">
                     <div className="text-center space-y-6 max-w-sm">
                         <div className="w-16 h-16 bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
@@ -435,7 +382,7 @@ export default function CheckoutPage() {
     /* ─── Main checkout layout ─── */
     return (
         <div className="min-h-screen bg-[#F8F7F5] font-avenir flex flex-col">
-            <Nav cartCount={cartCount} />
+            <Navbar cartCount={cartCount} />
 
             <div className="flex-1 max-w-6xl mx-auto w-full px-6 md:px-10 py-10">
 

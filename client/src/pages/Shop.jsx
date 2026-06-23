@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import logo from '../assets/logo.PNG';
 import { PRODUCTS } from '../data/products.js';
+import Navbar from '../components/common/Navbar.jsx';
 
 /* =========================================================================
    Note on the filename: this is the "All Products" catalog/shop page from
@@ -17,60 +17,10 @@ const Icon = ({ children, size = 20, className = '' }) => (
         {children}
     </svg>
 );
-const ChevronIcon = (props) => <Icon {...props}><path d="M6 9l6 6 6-6" /></Icon>;
-const BagIcon = (props) => <Icon {...props}><path d="M6 7h12l1 13H5L6 7z" /><path d="M9 7a3 3 0 016 0" /></Icon>;
+
 const ChatIcon = (props) => <Icon {...props}><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" /></Icon>;
 
-/* ---------- Nav (same header used across the site) ---------- */
-function Nav() {
-    const [accountOpen, setAccountOpen] = useState(false);
-    const navigate = useNavigate();
-    const navLinks = ['Home', 'Shop', 'About', 'Contact'];
 
-    return (
-        <>
-            <div className="bg-[#FDF6F3] text-center py-2 text-xs md:text-sm font-avenir text-[#2D3329] tracking-wide">
-                Free Delivery Over $75&nbsp;&nbsp;|&nbsp;&nbsp;Free Returns
-            </div>
-            <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white sticky top-0 z-40 border-b border-[#2D3329]/5">
-                <div className="flex items-center gap-6">
-                    <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain" />
-                    <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                        {navLinks.map((link) => {
-                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
-                            return (
-                                <a key={link} onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} href="#" className={`cursor-pointer hover:text-[#A96142] transition-colors ${link === 'Shop' ? 'text-[#A96142]' : ''}`}>
-                                    {link}
-                                </a>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
-                    MOTHER'S LOVE
-                </button>
-
-                <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
-                    <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
-                        Account
-                        <ChevronIcon size={14} className={`transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {accountOpen && (
-                        <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
-                            <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
-                        </div>
-                    )}
-                    <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
-                        <BagIcon size={20} />
-                        <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
-                    </button>
-                </div>
-            </nav>
-        </>
-    );
-}
 
 /* ---------- Filter bar ---------- */
 function FilterPill({ label, active, onClick }) {
@@ -141,7 +91,7 @@ export default function AllProductsPage() {
 
     return (
         <div className="min-h-screen bg-white font-avenir">
-            <Nav />
+            <Navbar />
 
             <header className="px-6 md:px-10 pt-16 pb-10 text-center">
                 <h1 className="font-poppins text-5xl md:text-6xl font-light text-[#2D3329]">All Products</h1>
