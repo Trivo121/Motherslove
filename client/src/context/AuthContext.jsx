@@ -14,6 +14,10 @@ export function AuthProvider({ children }) {
             const { data: { session } } = await supabase.auth.getSession();
             setUser(session?.user || null);
             if (session?.user) {
+                // Clear the OAuth hash from the URL so it looks clean
+                if (window.location.hash.includes('access_token')) {
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
                 fetchProfile(session.user.id);
             } else {
                 setLoading(false);
@@ -26,6 +30,9 @@ export function AuthProvider({ children }) {
         const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
             setUser(session?.user || null);
             if (session?.user) {
+                if (event === 'SIGNED_IN' && window.location.hash.includes('access_token')) {
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
                 await fetchProfile(session.user.id);
             } else {
                 setProfile(null);
@@ -47,6 +54,16 @@ export function AuthProvider({ children }) {
                 .single();
 
             if (error) throw error;
+            
+            // Check if user is approved. If not, log them out and show restricted view.
+            if (data && data.approved === false) {
+                await supabase.auth.signOut();
+                window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'restricted' } }));
+                setProfile(null);
+                setUser(null);
+                return;
+            }
+
             setProfile(data);
         } catch (error) {
             console.error('Error fetching profile:', error);
