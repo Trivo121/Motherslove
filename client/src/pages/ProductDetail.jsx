@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.PNG';
 import { PRODUCTS } from '../data/products.js';
 
 /* ---------- Icons ---------- */

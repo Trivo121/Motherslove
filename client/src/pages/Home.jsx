@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.PNG';
 import unique1 from '../assets/unique/Unique1.PNG';
 import unique2 from '../assets/unique/unique2.PNG';
 import unique3 from '../assets/unique/unique3.PNG';
