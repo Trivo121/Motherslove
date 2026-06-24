@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.PNG';
 import Navbar from '../components/common/Navbar.jsx';
@@ -13,20 +13,23 @@ const ChevronIcon = (props) => <Icon {...props}><path d="M6 9l6 6 6-6" /></Icon>
 const BagIcon = (props) => <Icon {...props}><path d="M6 7h12l1 13H5L6 7z" /><path d="M9 7a3 3 0 016 0" /></Icon>;
 const ArrowLeftIcon = (props) => <Icon {...props}><path d="M19 12H5M12 19l-7-7 7-7" /></Icon>;
 
-
-
 import { useCart } from '../context/CartContext.jsx';
 
 export default function CartPage() {
     const navigate = useNavigate();
-
-    const cartItems = [
-        { ...PRODUCTS[0], qty: 1, size: 'M' },
-        { ...PRODUCTS[1], qty: 2, size: 'S' },
-    ];
+    const { cartItems, updateQuantity, removeFromCart } = useCart();
     
-    const subtotal = cartItems.reduce((acc, item) => acc + (parseInt(item.price.replace(/\\D/g, '')) * item.qty), 0);
-    const shipping = subtotal > 999 ? 0 : 99;
+    const subtotal = cartItems.reduce((acc, item) => {
+        let priceNum = 0;
+        if (typeof item.price === 'string') {
+            priceNum = parseInt(item.price.replace(/\D/g, '')) || 0;
+        } else {
+            priceNum = item.price || 0;
+        }
+        return acc + (priceNum * item.qty);
+    }, 0);
+    
+    const shipping = subtotal > 999 || subtotal === 0 ? 0 : 99;
     const total = subtotal + shipping;
 
     return (
@@ -51,26 +54,33 @@ export default function CartPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {cartItems.map((item, idx) => (
+                                {cartItems.map((item, idx) => {
+                                    let priceNum = typeof item.price === 'string' ? parseInt(item.price.replace(/\D/g, '')) || 0 : item.price || 0;
+                                    return (
                                     <tr key={idx} className="border-b border-[#2D3329]/10">
                                         <td className="py-6 flex items-center gap-4">
                                             <div className="w-20 h-24 bg-white shrink-0 p-1 border border-[#2D3329]/10">
-                                                <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                                                {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
                                             </div>
                                             <div>
                                                 <p className="text-[#2D3329] text-base">{item.name}</p>
                                                 <p className="text-[#737373] text-sm mt-1">Size: {item.size}</p>
-                                                <p className="text-[#A96142] text-sm mt-1">{item.price}</p>
+                                                <p className="text-[#A96142] text-sm mt-1">₹{priceNum.toLocaleString('en-IN')}</p>
+                                                <button onClick={() => removeFromCart(item.id, item.size, item.color)} className="text-[#A96142] text-xs underline mt-2 hover:text-red-600 transition-colors">Remove</button>
                                             </div>
                                         </td>
                                         <td className="py-6 text-center">
-                                            <span className="text-[#2D3329] px-4 py-2 border border-[#2D3329]/20">{item.qty}</span>
+                                            <div className="flex items-center justify-center border border-[#2D3329]/25 w-fit mx-auto">
+                                                <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty - 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">-</button>
+                                                <span className="text-[#2D3329] font-avenir w-8 flex items-center justify-center">{item.qty}</span>
+                                                <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty + 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">+</button>
+                                            </div>
                                         </td>
                                         <td className="py-6 text-right text-[#2D3329] text-lg">
-                                            ₹{(parseInt(item.price.replace(/\\D/g, '')) * item.qty).toLocaleString('en-IN')}
+                                            ₹{(priceNum * item.qty).toLocaleString('en-IN')}
                                         </td>
                                     </tr>
-                                ))}
+                                )})}
                             </tbody>
                         </table>
                     </div>
@@ -88,7 +98,7 @@ export default function CartPage() {
                             <span>Total</span>
                             <span className="font-poppins text-[#A96142]">₹{total.toLocaleString('en-IN')}</span>
                         </div>
-                        <button onClick={() => navigate('/checkout')} className="w-full bg-[#A96142] text-white font-avenir py-4 text-sm hover:bg-[#8f5237] transition-colors uppercase tracking-widest">
+                        <button onClick={() => navigate('/checkout')} className="w-full bg-[#A96142] text-white font-avenir py-4 text-sm hover:bg-[#8f5237] transition-colors uppercase tracking-widest disabled:opacity-50" disabled={cartItems.length === 0}>
                             Proceed to Checkout
                         </button>
                     </div>
