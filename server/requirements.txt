@@ -1,2 +1,8 @@
 fastapi
 uvicorn
+pyjwt
+sqlalchemy
+pg8000
+pydantic-settings
+email-validator
+python-dotenv

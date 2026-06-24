@@ -12,6 +12,7 @@ import AdminProducts from './pages/Admin/Products.jsx'
 import AdminProductForm from './pages/Admin/ProductForm.jsx'
 
 import CheckoutPage from './pages/Checkout.jsx'
+import UserProfile from './pages/UserProfile.jsx'
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
-        
+
         {/* Admin Routes (No auth protection yet for previewing purposes) */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
@@ -32,6 +33,8 @@ function App() {
           <Route path="products/new" element={<AdminProductForm />} />
           <Route path="products/:productId/edit" element={<AdminProductForm />} />
         </Route>
+        
+        <Route path="/profile" element={<UserProfile />} />
       </Routes>
       <AuthModal />
     </>
