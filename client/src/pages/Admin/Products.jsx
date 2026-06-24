@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PRODUCTS } from './ProductData';
+
 
 /* =========================================================================
    ROUTER WIRING — add inside your admin route group in App.jsx:
@@ -108,9 +108,9 @@ function DeleteModal({ product, onConfirm, onCancel }) {
 }
 
 /* ---------- Product image / placeholder ---------- */
-function ProductThumbnail({ image, name }) {
-    if (image) {
-        return <img src={image} alt={name} className="w-full h-full object-cover" />;
+function ProductThumbnail({ image_url, name }) {
+    if (image_url) {
+        return <img src={image_url} alt={name} className="w-full h-full object-cover" />;
     }
     return (
         <div className="w-full h-full bg-[#FDF6F3] flex items-center justify-center">
@@ -130,7 +130,7 @@ function ProductCard({ product, onEdit, onDelete }) {
 
             {/* Image area */}
             <div className="relative aspect-square w-full overflow-hidden">
-                <ProductThumbnail image={product.image} name={product.name} />
+                <ProductThumbnail image_url={product.image_url} name={product.name} />
 
                 {/* Draft pill */}
                 {!product.published && (
@@ -204,23 +204,51 @@ function ProductCard({ product, onEdit, onDelete }) {
     );
 }
 
+
+
+const API_URL = 'http://127.0.0.1:8000/api';
+
 /* ---------- Page ---------- */
 export default function AdminProducts() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
-    const [products, setProducts] = useState(PRODUCTS);
+    const [products, setProducts] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    /* Real delete:
-       async function confirmDelete() {
-         await supabase.from('products').delete().eq('id', deleteTarget.id);
-         setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
-         setDeleteTarget(null);
-       }
-    */
-    function confirmDelete() {
-        setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
-        setDeleteTarget(null);
+    useEffect(() => {
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setProducts(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch products:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchProducts();
+    }, []);
+
+    async function confirmDelete() {
+        if (!deleteTarget) return;
+        try {
+            const res = await fetch(`${API_URL}/products/${deleteTarget.id}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+            } else {
+                alert("Failed to delete product.");
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setDeleteTarget(null);
+        }
     }
 
     const filtered = useMemo(() => {

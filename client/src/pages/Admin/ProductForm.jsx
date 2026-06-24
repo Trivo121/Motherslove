@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { PRODUCTS, PRODUCT_SIZES, PRODUCT_TAGS } from './ProductData';
+import { PRODUCT_SIZES, PRODUCT_TAGS } from './ProductData';
 
 /* =========================================================================
    SUPABASE WIRING
@@ -21,6 +21,43 @@ import { PRODUCTS, PRODUCT_SIZES, PRODUCT_TAGS } from './ProductData';
        .upload(`${id}.jpg`, file, { upsert: true });
      const publicUrl = supabase.storage.from('product-images').getPublicUrl(`${id}.jpg`);
    ========================================================================= */
+
+const API_URL = 'http://127.0.0.1:8000/api';
+
+const uploadToImageKit = async (file) => {
+  try {
+    const authResponse = await fetch(`${API_URL}/images/auth`); 
+    if (!authResponse.ok) throw new Error("Could not fetch upload authorization");
+    
+    const authData = await authResponse.json();
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("fileName", `product_${Date.now()}_${file.name.replace(/\s+/g, "_")}`);
+    formData.append("publicKey", import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY);
+    formData.append("signature", authData.signature);
+    formData.append("expire", authData.expire);
+    formData.append("token", authData.token);
+    formData.append("folder", "/products");
+
+    const uploadResponse = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!uploadResponse.ok) {
+      const errorData = await uploadResponse.json();
+      throw new Error(errorData.message || "ImageKit upload failed");
+    }
+
+    const uploadResult = await uploadResponse.json();
+    return uploadResult.url; 
+  } catch (error) {
+    console.error("Error handling image upload:", error);
+    alert("Image upload failed. Please try again.");
+    return null;
+  }
+};
 
 /* ---------- Icons ---------- */
 const I = ({ children, size = 18, className = '' }) => (
@@ -99,22 +136,37 @@ export default function AdminProductForm() {
     const [success, setSuccess] = useState(false);
     const [notFound, setNotFound] = useState(false);
 
+    const [imageFile, setImageFile] = useState(null);
+
     /* Populate form when editing */
     useEffect(() => {
         if (!isEditing) return;
-        const product = PRODUCTS.find((p) => p.id === productId);
-        if (!product) { setNotFound(true); return; }
-        setForm({
-            name: product.name,
-            price: String(product.price),
-            description: product.description ?? '',
-            sizes: [...product.sizes],
-            imagePreview: product.image ?? null,
-            published: product.published,
-            tags: [...product.tags],
-            stock: String(product.stock),
-            category: product.category || 'unique',
-        });
+        
+        async function fetchProduct() {
+            try {
+                const res = await fetch(`${API_URL}/products/${productId}`);
+                if (!res.ok) {
+                    setNotFound(true);
+                    return;
+                }
+                const product = await res.json();
+                setForm({
+                    name: product.name,
+                    price: String(product.price),
+                    description: product.description || '',
+                    sizes: product.sizes || [],
+                    imagePreview: product.image_url || null,
+                    published: product.published,
+                    tags: product.tags || [],
+                    stock: String(product.stock),
+                    category: product.category || 'unique',
+                });
+            } catch (err) {
+                console.error(err);
+                setNotFound(true);
+            }
+        }
+        fetchProduct();
     }, [isEditing, productId]);
 
     /* Generic field setter — also clears that field's error */
@@ -144,6 +196,7 @@ export default function AdminProductForm() {
     function handleImageChange(e) {
         const file = e.target.files?.[0];
         if (!file) return;
+        setImageFile(file);
         const reader = new FileReader();
         reader.onload = (ev) => set('imagePreview', ev.target.result);
         reader.readAsDataURL(file);
@@ -163,11 +216,48 @@ export default function AdminProductForm() {
         if (Object.keys(errs).length) { setErrors(errs); return; }
 
         setSaving(true);
-        /* Replace with real Supabase call — see wiring comment at top */
-        await new Promise((r) => setTimeout(r, 700));
-        setSaving(false);
-        setSuccess(true);
-        setTimeout(() => navigate('/admin/products'), 1400);
+        try {
+            let imageUrl = form.imagePreview;
+            if (imageFile) {
+                const uploadedUrl = await uploadToImageKit(imageFile);
+                if (!uploadedUrl) {
+                    setSaving(false);
+                    return;
+                }
+                imageUrl = uploadedUrl;
+            }
+
+            const payload = {
+                name: form.name,
+                price: Number(form.price),
+                description: form.description,
+                stock: Number(form.stock || 0),
+                category: form.category,
+                published: form.published,
+                image_url: imageUrl,
+                sizes: form.sizes,
+                tags: form.tags,
+            };
+
+            const url = isEditing ? `${API_URL}/products/${productId}` : `${API_URL}/products`;
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error("Failed to save product");
+
+            setSuccess(true);
+            setTimeout(() => navigate('/admin/products'), 1400);
+        } catch (err) {
+            console.error(err);
+            alert("Error saving product");
+        } finally {
+            setSaving(false);
+        }
     }
 
     /* — Product not found — */
