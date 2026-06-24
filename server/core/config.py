@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     # PostgreSQL connection string from Supabase
     # E.g., postgresql+pg8000://postgres.xxxx:password@aws-0-eu-central-1.pooler.supabase.com:6543/postgres
     DATABASE_URL: str = "postgresql+pg8000://user:password@localhost:5432/dbname"
+    
+    # Razorpay Credentials
+    RAZORPAY_KEY_ID: str = ""
+    RAZORPAY_KEY_SECRET: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

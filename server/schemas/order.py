@@ -38,8 +38,17 @@ class OrderResponse(BaseModel):
     shipping_cost: int
     total_amount: int
     status: str
+    razorpay_order_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     items: List[OrderItemResponse] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+class PaymentVerification(BaseModel):
+    order_id: UUID
+    razorpay_payment_id: str
+    razorpay_order_id: str
+    razorpay_signature: str
 
     model_config = ConfigDict(from_attributes=True)

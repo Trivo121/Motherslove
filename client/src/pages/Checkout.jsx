@@ -13,71 +13,7 @@ import Navbar from '../components/common/Navbar.jsx';
    From CartPage, navigate to '/checkout' after verifying the cart isn't empty.
    ========================================================================= */
 
-/* ─────────────────────────────────────────────────────────────────────────
-   PAYTM UPI PAYMENT — INTEGRATION PLACEHOLDER
-   ─────────────────────────────────────────────────────────────────────────
 
-   Step 1 — Add the Paytm JS SDK to your /public/index.html <head>:
-
-     Staging:
-       <script src="https://securegw-stage.paytm.in/merchantpgpui/checkoutjs/merchants/{YOUR_MID}.js" />
-     Production:
-       <script src="https://securegw.paytm.in/merchantpgpui/checkoutjs/merchants/{YOUR_MID}.js" />
-
-   Step 2 — Create a backend endpoint /api/create-paytm-order that:
-     · Accepts  { orderId, amount, customerId }
-     · Generates a Paytm transaction token using paytmchecksum
-     · Returns  { txnToken, mid, orderId }
-
-     npm install paytmchecksum (Node.js backend)
-
-   Step 3 — Replace the TODO block inside handlePayment() below:
-
-     const res = await fetch('/api/create-paytm-order', {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({
-         orderId:    `ML-${Date.now()}`,
-         amount:     total.toString(),
-         customerId: form.email,
-       }),
-     });
-     const { txnToken, mid, orderId } = await res.json();
-
-     const config = {
-       root: "",
-       flow: "DEFAULT",
-       merchant: {
-         mid,
-         name:     "Mother's Love",
-         logo:     "https://yourdomain.com/logo.png",
-         redirect: false,
-       },
-       transactionToken: txnToken,
-       orderId,
-       amount: total.toString(),
-       payMode: {
-         labels:          {},
-         savedCardLength: 0,
-         order:           ["UPI"],   // ← restricts to UPI only
-       },
-       userDetail: {
-         mobileNumber: form.phone,
-         name:         form.name,
-       },
-       website:     "WEBSTAGING",    // → "DEFAULT" in production
-       callbackUrl: `https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=${orderId}`,
-     };
-     new window.Paytm.CheckoutJS.invoke(config);
-
-   Step 4 — Verify the callback on your backend:
-     POST /api/paytm-callback
-     Use paytmchecksum to verify the response checksum.
-     On success → mark order as PAID in your database.
-
-   Docs: https://developer.paytm.com/docs/payment-gateway/web-integration/
-   ─────────────────────────────────────────────────────────────────────────
-*/
 
 
 
@@ -267,7 +203,7 @@ export default function CheckoutPage() {
     const [form, setForm] = useState({
         name: '', email: '', phone: '',
         flat: '', street: '', city: '', state: '', pincode: '',
-        upiId: '',
+        
     });
     const [errors, setErrors] = useState({});
     const [placing, setPlacing] = useState(false);
@@ -349,12 +285,65 @@ export default function CheckoutPage() {
             }
 
             const orderData = await res.json();
-            console.log("Order created:", orderData);
-
-            // TODO: Here is where you will initialize Paytm using orderData.total_amount and orderData.id
             
-            clearCart();
-            setPlaced(true);
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: total * 100, // paise
+                currency: "INR",
+                name: "Mother's Love",
+                description: "Purchase from Mother's Love",
+                order_id: orderData.razorpay_order_id,
+                handler: async function (response) {
+                    try {
+                        const verifyRes = await fetch('http://127.0.0.1:8000/api/orders/verify-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                order_id: orderData.id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+
+                        if (!verifyRes.ok) {
+                            throw new Error("Payment verification failed");
+                        }
+                        
+                        clearCart();
+                        setPlaced(true);
+                    } catch (err) {
+                        alert("Payment verification error: " + err.message);
+                    } finally {
+                        setPlacing(false);
+                    }
+                },
+                prefill: {
+                    name: form.name,
+                    email: form.email,
+                    contact: form.phone
+                },
+                theme: {
+                    color: "#A96142"
+                },
+                modal: {
+                    ondismiss: function() {
+                        setPlacing(false);
+                    }
+                }
+            };
+            
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response){
+                alert("Payment Failed: " + response.error.description);
+                setPlacing(false);
+            });
+            rzp.open();
+            
+            // We don't setPlacing(false) here because the modal is open.
+            // It will be set in ondismiss or handler.
+            return;
+                        setPlaced(true);
         } catch (err) {
             console.error(err);
             alert("Checkout Error: " + err.message);
@@ -547,41 +536,20 @@ export default function CheckoutPage() {
                             </div>
                         </FormSection>
 
-                        {/* Step 3 — Payment (UPI via Paytm) */}
+                        {/* Step 3 — Payment */}
                         <FormSection step={3} title="Payment">
 
-                            {/* UPI method card */}
-                            <div className="flex items-center gap-4 p-4 bg-[#FDF6F3] border border-[#A96142]/20">
-                                {/* UPI wordmark */}
-                                <div className="px-3 py-2 bg-white border border-[#2D3329]/10 shrink-0">
-                                    <p className="font-avenir text-[11px] font-light tracking-[0.2em] text-[#2D3329] uppercase">
-                                        UPI
-                                    </p>
-                                </div>
+                            <div className="flex items-center gap-4 p-4 bg-[#FDF6F3] border border-[#A96142]/20 mb-4">
                                 <div className="flex-1">
-                                    <p className="font-avenir text-sm text-[#2D3329]">Pay via UPI</p>
+                                    <p className="font-avenir text-sm text-[#2D3329]">Secure Checkout via Razorpay</p>
                                     <p className="font-avenir text-xs text-[#737373] mt-0.5">
-                                        Powered by Paytm · GPay, PhonePe, BHIM &amp; all UPI apps accepted
+                                        Cards, UPI, Netbanking & Wallets accepted
                                     </p>
                                 </div>
                                 <div className="w-5 h-5 rounded-full border-2 border-[#A96142] flex items-center justify-center shrink-0">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#A96142]" />
                                 </div>
                             </div>
-
-                            {/* Optional UPI ID pre-fill */}
-                            <InputField
-                                id="upiId"
-                                label="UPI ID"
-                                type="text"
-                                placeholder="yourname@paytm  (optional)"
-                                value={form.upiId}
-                                onChange={(e) => setField('upiId', e.target.value)}
-                                error={errors.upiId}
-                            />
-                            <p className="font-avenir text-xs text-[#737373] -mt-2">
-                                Enter your UPI ID above or choose any UPI app inside the Paytm checkout that opens next.
-                            </p>
 
                             {/* Pay button */}
                             <button
@@ -591,8 +559,8 @@ export default function CheckoutPage() {
                             >
                                 <LockIcon size={15} />
                                 {placing
-                                    ? 'Connecting to Paytm…'
-                                    : `Pay ₹${total.toLocaleString('en-IN')} via Paytm`}
+                                    ? 'Initializing Payment…'
+                                    : `Pay ₹${total.toLocaleString('en-IN')}`}
                             </button>
 
                             {/* Security note */}

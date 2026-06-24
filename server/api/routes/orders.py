@@ -94,4 +94,73 @@ def checkout_cart(order_data: OrderCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_order)
     
+    # 5. Create Razorpay Order
+    import razorpay
+    from core.config import settings
+    
+    # Only initialize if credentials are set (to avoid crashing if empty)
+    if settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET:
+        try:
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            # Amount in paise
+            razorpay_order = client.order.create(dict(
+                amount=new_order.total_amount * 100,
+                currency="INR",
+                receipt=str(new_order.id)
+            ))
+            
+            new_order.razorpay_order_id = razorpay_order["id"]
+            db.commit()
+            db.refresh(new_order)
+        except Exception as e:
+            # If Razorpay fails, we can either rollback or keep it as pending.
+            # Usually better to return a 500 error and rollback so user can retry.
+            db.rollback()
+            raise HTTPException(status_code=500, detail=f"Failed to initialize payment gateway: {str(e)}")
+    
     return new_order
+
+
+from schemas.order import PaymentVerification
+
+@router.post("/verify-payment", status_code=status.HTTP_200_OK)
+def verify_payment(payload: PaymentVerification, db: Session = Depends(get_db)):
+    """
+    Verifies the Razorpay payment signature and updates the order status.
+    """
+    import razorpay
+    from core.config import settings
+
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        raise HTTPException(status_code=500, detail="Payment gateway not configured")
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    try:
+        # Verify the signature
+        client.utility.verify_payment_signature({
+            'razorpay_order_id': payload.razorpay_order_id,
+            'razorpay_payment_id': payload.razorpay_payment_id,
+            'razorpay_signature': payload.razorpay_signature
+        })
+    except razorpay.errors.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid payment signature")
+
+    # Update order in DB
+    order = db.query(Order).filter(Order.id == payload.order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # Ensure it matches the razorpay order id we saved
+    if order.razorpay_order_id != payload.razorpay_order_id:
+        raise HTTPException(status_code=400, detail="Mismatched order ID")
+
+    order.status = OrderStatus.PROCESSING
+    order.payment_method = "RAZORPAY"
+    order.razorpay_payment_id = payload.razorpay_payment_id
+    order.razorpay_signature = payload.razorpay_signature
+
+    db.commit()
+    db.refresh(order)
+
+    return {"status": "success", "message": "Payment verified successfully", "order_id": order.id}

@@ -25,7 +25,9 @@ class Order(Base):
     status = Column(ENUM(OrderStatus, name="order_status", create_type=False), nullable=False, server_default=text("'PENDING'::order_status"))
     
     payment_method = Column(String, nullable=True)
-    paytm_order_id = Column(String, unique=True, nullable=True)
+    razorpay_order_id = Column(String, unique=True, nullable=True)
+    razorpay_payment_id = Column(String, unique=True, nullable=True)
+    razorpay_signature = Column(String, nullable=True)
     
     shipping_name = Column(String, nullable=False)
     shipping_email = Column(String, nullable=False)
