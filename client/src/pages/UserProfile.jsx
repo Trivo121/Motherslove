@@ -1,5 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/common/Navbar.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
+import { supabase } from './Login.jsx';
+
+const API_URL = 'http://127.0.0.1:8000/api';
 import Navbar from '../components/common/Navbar.jsx';
 
 /* =========================================================================
@@ -33,54 +38,6 @@ import Navbar from '../components/common/Navbar.jsx';
    Sign out:
      await supabase.auth.signOut(); navigate('/');
    ========================================================================= */
-
-/* ---------- Mock data (replace with Supabase fetches above) ---------- */
-const MOCK_USER = {
-    name: 'Priya Sharma',
-    email: 'priya.sharma@email.com',
-    phone: '9876543210',
-    memberSince: 'March 2024',
-};
-
-const INITIAL_ADDRESSES = [
-    {
-        id: 'A1', label: 'Home',
-        flat: '4B, Sunrise Apartments', street: 'MG Road, Indiranagar',
-        city: 'Bengaluru', state: 'Karnataka', pincode: '560038',
-        isDefault: true,
-    },
-    {
-        id: 'A2', label: 'Work',
-        flat: '12th Floor, Prestige Tech Park', street: 'Outer Ring Road, Marathahalli',
-        city: 'Bengaluru', state: 'Karnataka', pincode: '560103',
-        isDefault: false,
-    },
-];
-
-const MOCK_ORDERS = [
-    {
-        id: 'ML-1021', date: '15 Jun 2026', status: 'Delivered',
-        items: [
-            { name: 'Classic Crew Neck Tee', size: 'M', qty: 1, price: 550, img: null },
-        ],
-        total: 649,
-    },
-    {
-        id: 'ML-1019', date: '28 May 2026', status: 'Shipped',
-        items: [
-            { name: 'Striped Boatneck Tee', size: 'S', qty: 2, price: 680, img: null },
-        ],
-        total: 1360,
-    },
-    {
-        id: 'ML-1015', date: '10 May 2026', status: 'Delivered',
-        items: [
-            { name: 'Polo Collar Tee', size: 'L', qty: 1, price: 720, img: null },
-            { name: 'Relaxed Jersey Tee', size: 'M', qty: 1, price: 600, img: null },
-        ],
-        total: 1320,
-    },
-];
 
 const INDIAN_STATES = [
     'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -183,41 +140,99 @@ function InfoRow({ label, value }) {
 /* ══════════════ PAGE ══════════════ */
 export default function UserProfile() {
     const navigate = useNavigate();
+    const { user, profile: authProfile, signOut } = useAuth();
 
     /* ─── Tab state ─── */
     const [activeTab, setActiveTab] = useState('profile');
+    const [loadingData, setLoadingData] = useState(true);
 
     /* ─── Profile state ─── */
-    const [savedProfile, setSavedProfile] = useState({
-        name: MOCK_USER.name,
-        phone: MOCK_USER.phone,
-    });
-    const [profileForm, setProfileForm] = useState({ name: MOCK_USER.name, phone: MOCK_USER.phone });
+    const [savedProfile, setSavedProfile] = useState({ name: '', phone: '' });
+    const [profileForm, setProfileForm] = useState({ name: '', phone: '' });
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [profileSaved, setProfileSaved] = useState(false);
 
     /* ─── Address state ─── */
-    const [addresses, setAddresses] = useState(INITIAL_ADDRESSES);
+    const [addresses, setAddresses] = useState([]);
     const [showAddrForm, setShowAddrForm] = useState(false);
     const [editingAddrId, setEditingAddrId] = useState(null);
-    const EMPTY_ADDR = { label: 'Home', flat: '', street: '', city: '', state: '', pincode: '' };
+    const EMPTY_ADDR = { label: 'Home', flat: '', street: '', city: '', state: '', pincode: '', is_default: false };
     const [addrForm, setAddrForm] = useState(EMPTY_ADDR);
     const [addrErrors, setAddrErrors] = useState({});
+
+    /* ─── Orders state ─── */
+    const [orders, setOrders] = useState([]);
 
     const TABS = [
         { key: 'profile', label: 'My Profile', Icon: UserIcon },
         { key: 'addresses', label: 'Addresses', Icon: MapPinIcon },
         { key: 'orders', label: 'Order History', Icon: PackageIcon },
     ];
+    
+    useEffect(() => {
+        if (!user) return;
+        
+        async function fetchData() {
+            setLoadingData(true);
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const token = session?.access_token;
+                if (!token) return;
+                
+                const headers = {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                };
+                
+                const profRes = await fetch(`${API_URL}/users/me`, { headers });
+                if (profRes.ok) {
+                    const profData = await profRes.json();
+                    const p = { name: profData.name || '', phone: profData.phone || '' };
+                    setSavedProfile(p);
+                    setProfileForm(p);
+                }
+                
+                const addrRes = await fetch(`${API_URL}/users/me/addresses`, { headers });
+                if (addrRes.ok) setAddresses(await addrRes.json());
+                
+                const orderRes = await fetch(`${API_URL}/users/me/orders`, { headers });
+                if (orderRes.ok) setOrders(await orderRes.json());
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            } finally {
+                setLoadingData(false);
+            }
+        }
+        fetchData();
+    }, [user]);
+
+    async function getAuthHeaders() {
+        const { data: { session } } = await supabase.auth.getSession();
+        return {
+            'Authorization': `Bearer ${session?.access_token}`,
+            'Content-Type': 'application/json'
+        };
+    }
 
     /* ─── Profile handlers ─── */
-    function saveProfile() {
+    async function saveProfile() {
         if (!profileForm.name.trim()) return;
-        setSavedProfile(profileForm);
-        setIsEditingProfile(false);
-        setProfileSaved(true);
-        setTimeout(() => setProfileSaved(false), 3000);
+        try {
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_URL}/users/me`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify(profileForm)
+            });
+            if (res.ok) {
+                setSavedProfile(profileForm);
+                setIsEditingProfile(false);
+                setProfileSaved(true);
+                setTimeout(() => setProfileSaved(false), 3000);
+            }
+        } catch (err) { console.error(err); }
     }
+    
     function cancelEditProfile() {
         setProfileForm(savedProfile);
         setIsEditingProfile(false);
@@ -230,21 +245,25 @@ export default function UserProfile() {
         setEditingAddrId(null);
         setShowAddrForm(true);
     }
+    
     function openEditForm(addr) {
-        setAddrForm({ label: addr.label, flat: addr.flat, street: addr.street, city: addr.city, state: addr.state, pincode: addr.pincode });
+        setAddrForm({ label: addr.label, flat: addr.flat, street: addr.street, city: addr.city, state: addr.state, pincode: addr.pincode, is_default: addr.is_default });
         setAddrErrors({});
         setEditingAddrId(addr.id);
         setShowAddrForm(true);
     }
+    
     function cancelAddrForm() {
         setShowAddrForm(false);
         setEditingAddrId(null);
         setAddrErrors({});
     }
+    
     function setAddrField(key, value) {
         setAddrForm((f) => ({ ...f, [key]: value }));
         if (addrErrors[key]) setAddrErrors((e) => ({ ...e, [key]: '' }));
     }
+    
     function validateAddr() {
         const errs = {};
         if (!addrForm.flat.trim()) errs.flat = 'Required.';
@@ -254,29 +273,48 @@ export default function UserProfile() {
         if (!/^\d{6}$/.test(addrForm.pincode)) errs.pincode = 'Enter a valid 6-digit pincode.';
         return errs;
     }
-    function saveAddress() {
+    
+    async function saveAddress() {
         const errs = validateAddr();
         if (Object.keys(errs).length) { setAddrErrors(errs); return; }
-        if (editingAddrId) {
-            setAddresses((prev) => prev.map((a) => a.id === editingAddrId ? { ...a, ...addrForm } : a));
-        } else {
-            const newAddr = { ...addrForm, id: `A${Date.now()}`, isDefault: addresses.length === 0 };
-            setAddresses((prev) => [...prev, newAddr]);
-        }
-        cancelAddrForm();
-    }
-    function removeAddress(id) {
-        setAddresses((prev) => {
-            const filtered = prev.filter((a) => a.id !== id);
-            const wasDefault = prev.find((a) => a.id === id)?.isDefault;
-            if (wasDefault && filtered.length > 0) {
-                return filtered.map((a, i) => ({ ...a, isDefault: i === 0 }));
+        try {
+            const headers = await getAuthHeaders();
+            const url = editingAddrId ? `${API_URL}/users/me/addresses/${editingAddrId}` : `${API_URL}/users/me/addresses`;
+            const method = editingAddrId ? 'PATCH' : 'POST';
+            
+            const res = await fetch(url, { method, headers, body: JSON.stringify(addrForm) });
+            if (res.ok) {
+                const addrRes = await fetch(`${API_URL}/users/me/addresses`, { headers });
+                if (addrRes.ok) setAddresses(await addrRes.json());
+                cancelAddrForm();
             }
-            return filtered;
-        });
+        } catch (err) { console.error(err); }
     }
-    function setDefaultAddress(id) {
-        setAddresses((prev) => prev.map((a) => ({ ...a, isDefault: a.id === id })));
+    
+    async function removeAddress(id) {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_URL}/users/me/addresses/${id}`, { method: 'DELETE', headers });
+            if (res.ok) {
+                const addrRes = await fetch(`${API_URL}/users/me/addresses`, { headers });
+                if (addrRes.ok) setAddresses(await addrRes.json());
+            }
+        } catch (err) { console.error(err); }
+    }
+    
+    async function setDefaultAddress(id) {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_URL}/users/me/addresses/${id}`, {
+                method: 'PATCH',
+                headers,
+                body: JSON.stringify({ is_default: true })
+            });
+            if (res.ok) {
+                const addrRes = await fetch(`${API_URL}/users/me/addresses`, { headers });
+                if (addrRes.ok) setAddresses(await addrRes.json());
+            }
+        } catch (err) { console.error(err); }
     }
 
     /* ─── Render ─── */
@@ -299,9 +337,9 @@ export default function UserProfile() {
                             <h1 className="font-poppins text-2xl font-light text-[#2D3329] leading-tight">
                                 {savedProfile.name}
                             </h1>
-                            <p className="font-avenir text-sm text-[#737373]">{MOCK_USER.email}</p>
+                            <p className="font-avenir text-sm text-[#737373]">{user?.email}</p>
                             <p className="font-avenir text-xs text-[#737373]/60 mt-0.5">
-                                Member since {MOCK_USER.memberSince}
+                                Member since {authProfile ? new Date(authProfile.created_at).toLocaleDateString('en-US', {month: 'long', year: 'numeric'}) : ''}
                             </p>
                         </div>
                     </div>
@@ -373,7 +411,7 @@ export default function UserProfile() {
                                             Email Address
                                         </label>
                                         <div className="w-full px-4 py-3 border border-[#2D3329]/10 bg-[#F8F7F5] font-avenir text-sm text-[#737373]">
-                                            {MOCK_USER.email}
+                                            {user?.email || ''}
                                         </div>
                                         <p className="font-avenir text-xs text-[#737373]/60">
                                             Email is linked to your account. Contact support to change it.
@@ -407,9 +445,9 @@ export default function UserProfile() {
                             ) : (
                                 <div className="px-6 py-2">
                                     <InfoRow label="Full Name" value={savedProfile.name} />
-                                    <InfoRow label="Email Address" value={MOCK_USER.email} />
+                                    <InfoRow label="Email Address" value={user?.email} />
                                     <InfoRow label="Phone Number" value={savedProfile.phone ? `+91 ${savedProfile.phone}` : null} />
-                                    <InfoRow label="Member Since" value={MOCK_USER.memberSince} />
+                                    <InfoRow label="Member Since" value={authProfile ? new Date(authProfile.created_at).toLocaleDateString('en-US', {month: 'long', year: 'numeric'}) : ''} />
                                 </div>
                             )}
                         </div>
@@ -466,7 +504,7 @@ export default function UserProfile() {
                                 {addresses.map((addr) => (
                                     <div
                                         key={addr.id}
-                                        className={`bg-white border p-5 flex flex-col gap-4 transition-colors ${addr.isDefault
+                                        className={`bg-white border p-5 flex flex-col gap-4 transition-colors ${addr.is_default
                                             ? 'border-[#A96142]/30'
                                             : 'border-[#2D3329]/8 hover:border-[#2D3329]/20'
                                             }`}
@@ -476,7 +514,7 @@ export default function UserProfile() {
                                             <span className="font-avenir text-xs uppercase tracking-wider px-2 py-0.5 bg-[#F8F7F5] border border-[#2D3329]/10 text-[#2D3329]">
                                                 {addr.label}
                                             </span>
-                                            {addr.isDefault && (
+                                            {addr.is_default && (
                                                 <span className="font-avenir text-[10px] uppercase tracking-wider px-2 py-0.5 bg-[#FDF6F3] border border-[#A96142]/25 text-[#A96142]">
                                                     Default
                                                 </span>
@@ -494,7 +532,7 @@ export default function UserProfile() {
 
                                         {/* Actions */}
                                         <div className="flex items-center gap-3 pt-3 border-t border-[#2D3329]/8">
-                                            {!addr.isDefault && (
+                                            {!addr.is_default && (
                                                 <button
                                                     onClick={() => setDefaultAddress(addr.id)}
                                                     className="font-avenir text-xs text-[#737373] hover:text-[#A96142] transition-colors"
@@ -648,7 +686,7 @@ export default function UserProfile() {
                 {activeTab === 'orders' && (
                     <div className="space-y-4">
 
-                        {MOCK_ORDERS.length === 0 ? (
+                        {orders.length === 0 ? (
                             <div className="bg-white border border-[#2D3329]/8 py-20 flex flex-col items-center gap-3 text-[#737373]">
                                 <PackageIcon size={40} className="opacity-20" />
                                 <p className="font-avenir text-sm">You haven't placed any orders yet.</p>
@@ -660,7 +698,7 @@ export default function UserProfile() {
                                 </button>
                             </div>
                         ) : (
-                            MOCK_ORDERS.map((order) => (
+                            orders.map((order) => (
                                 <div key={order.id} className="bg-white border border-[#2D3329]/8">
 
                                     {/* Order header */}
@@ -673,7 +711,7 @@ export default function UserProfile() {
                                             <div className="h-6 w-px bg-[#2D3329]/10" />
                                             <div>
                                                 <p className="font-avenir text-[10px] uppercase tracking-wider text-[#737373]">Placed on</p>
-                                                <p className="font-avenir text-sm text-[#2D3329]">{order.date}</p>
+                                                <p className="font-avenir text-sm text-[#2D3329]">{new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                                             </div>
                                         </div>
                                         <StatusBadge status={order.status} />
@@ -712,7 +750,7 @@ export default function UserProfile() {
                                         <div className="flex items-baseline gap-2">
                                             <span className="font-avenir text-xs text-[#737373] uppercase tracking-wider">Order Total</span>
                                             <span className="font-poppins text-base font-light text-[#A96142]">
-                                                ₹{order.total.toLocaleString('en-IN')}
+                                                ₹{order.total_amount.toLocaleString('en-IN')}
                                             </span>
                                         </div>
                                         <button
