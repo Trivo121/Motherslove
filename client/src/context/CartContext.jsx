@@ -10,7 +10,13 @@ export function CartProvider({ children }) {
     const [cartItems, setCartItems] = useState(() => {
         try {
             const stored = localStorage.getItem('motherslove_cart');
-            return stored ? JSON.parse(stored) : [];
+            if (!stored) return [];
+            const parsed = JSON.parse(stored);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.filter(item => item && typeof item === 'object' && item.id).map(item => ({
+                ...item,
+                qty: item.qty || 1
+            }));
         } catch (err) {
             console.error("Error reading cart from localStorage", err);
             return [];
@@ -31,6 +37,14 @@ export function CartProvider({ children }) {
                 item => item.id === product.id && item.size === size && item.color === color
             );
 
+            // Ensure we extract a clean numeric price
+            let priceNum = 0;
+            if (typeof product.price === 'string') {
+                priceNum = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
+            } else {
+                priceNum = product.price || 0;
+            }
+
             if (existingItemIndex >= 0) {
                 const updated = [...prev];
                 updated[existingItemIndex].qty += qty;
@@ -39,8 +53,8 @@ export function CartProvider({ children }) {
                 return [...prev, { 
                     id: product.id, 
                     name: product.name, 
-                    price: product.price, 
-                    img: product.image_url || product.image, 
+                    price: priceNum, // Store as clean number immediately
+                    img: product.image_url || product.image || product.img, 
                     size, 
                     color, 
                     qty 

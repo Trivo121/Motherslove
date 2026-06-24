@@ -186,7 +186,9 @@ function OrderSummary({ cart, total, subtotal, shipping }) {
 
             {/* Items */}
             <div className="divide-y divide-[#2D3329]/5">
-                {cart.map((item) => (
+                {cart.map((item) => {
+                    let priceNum = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : item.price || 0;
+                    return (
                     <div key={`${item.id}-${item.size}`} className="flex items-center gap-4 px-6 py-4">
                         {/* Thumbnail */}
                         <div className="w-16 h-16 shrink-0 bg-[#FDF6F3] flex items-center justify-center overflow-hidden relative">
@@ -214,10 +216,10 @@ function OrderSummary({ cart, total, subtotal, shipping }) {
 
                         {/* Line total */}
                         <p className="font-avenir text-sm text-[#2D3329] shrink-0">
-                            ₹{(item.price * item.qty).toLocaleString('en-IN')}
+                            ₹{(priceNum * item.qty).toLocaleString('en-IN')}
                         </p>
                     </div>
-                ))}
+                )})}
             </div>
 
             {/* Totals */}
@@ -247,16 +249,10 @@ function OrderSummary({ cart, total, subtotal, shipping }) {
 
             {/* Trust signals */}
             <div className="px-6 pb-5 space-y-2 border-t border-[#2D3329]/8 pt-4">
-                {[
-                    { Icon: ShieldIcon, text: 'SSL-encrypted, secure checkout' },
-                    { Icon: TruckIcon, text: 'Estimated delivery in 3–5 days' },
-                    { Icon: RefreshIcon, text: 'Free returns within 30 days' },
-                ].map(({ Icon, text }) => (
-                    <div key={text} className="flex items-center gap-2.5 text-[#737373]">
-                        <Icon size={13} className="shrink-0" />
-                        <span className="font-avenir text-xs">{text}</span>
-                    </div>
-                ))}
+                <div className="flex items-center gap-2.5 text-[#737373]">
+                    <TruckIcon size={13} className="shrink-0" />
+                    <span className="font-avenir text-xs">Estimated Delivery in 5-7 days</span>
+                </div>
             </div>
         </div>
     );
@@ -279,7 +275,7 @@ export default function CheckoutPage() {
 
     /* — Calculations — */
     const subtotal = cartItems.reduce((sum, item) => {
-        let priceNum = typeof item.price === 'string' ? parseInt(item.price.replace(/\D/g, '')) || 0 : item.price || 0;
+        let priceNum = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : item.price || 0;
         return sum + (priceNum * item.qty);
     }, 0);
     const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;

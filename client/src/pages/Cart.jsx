@@ -22,7 +22,7 @@ export default function CartPage() {
     const subtotal = cartItems.reduce((acc, item) => {
         let priceNum = 0;
         if (typeof item.price === 'string') {
-            priceNum = parseInt(item.price.replace(/\D/g, '')) || 0;
+            priceNum = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
         } else {
             priceNum = item.price || 0;
         }
@@ -55,7 +55,7 @@ export default function CartPage() {
                             </thead>
                             <tbody>
                                 {cartItems.map((item, idx) => {
-                                    let priceNum = typeof item.price === 'string' ? parseInt(item.price.replace(/\D/g, '')) || 0 : item.price || 0;
+                                    let priceNum = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : item.price || 0;
                                     return (
                                     <tr key={idx} className="border-b border-[#2D3329]/10">
                                         <td className="py-6 flex items-center gap-4">
