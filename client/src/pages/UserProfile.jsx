@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from './Login.jsx';
 
 const API_URL = 'http://127.0.0.1:8000/api';
-import Navbar from '../components/common/Navbar.jsx';
 
 /* =========================================================================
    ROUTER — add to App.jsx:
