@@ -18,7 +18,7 @@ const Icon = ({ children, size = 20, className = '' }) => (
     </svg>
 );
 
-const ChatIcon = (props) => <Icon {...props}><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" /></Icon>;
+
 
 
 
@@ -83,7 +83,7 @@ export default function AllProductsPage() {
     const filters = [
         { key: 'all', label: 'All Products' },
         { key: 'unique', label: 'Unique' },
-        { key: 'formal', label: 'Formal' },
+        { key: 'official', label: 'Official' },
     ];
 
     const visibleProducts =
@@ -122,13 +122,7 @@ export default function AllProductsPage() {
                 </div>
             </footer>
 
-            <button
-                aria-label="Open chat"
-                className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#A96142] text-white px-5 py-3 rounded-full shadow-lg hover:bg-[#8f5237] transition-colors"
-            >
-                <ChatIcon size={18} />
-                <span className="font-avenir text-sm">Let's Chat!</span>
-            </button>
+
         </div>
     );
 }

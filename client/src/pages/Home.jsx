@@ -28,11 +28,7 @@ const Icon = ({ children, size = 20, className = '' }) => (
 );
 
 
-const ChatIcon = (props) => (
-    <Icon {...props}>
-        <path d="M4 5h16v10H10l-5 4v-4H4V5z" />
-    </Icon>
-);
+
 const ArrowIcon = (props) => (
     <Icon {...props}>
         <path d="M7 17L17 7M7 7h10v10" />
@@ -87,9 +83,9 @@ const HomePage = () => {
             target: 'unique',
         },
         {
-            label: 'Shop Formal Prints',
+            label: 'Shop Official Prints',
             img: formalCover,
-            target: 'formal',
+            target: 'official',
         },
     ];
 
@@ -212,7 +208,7 @@ const HomePage = () => {
                         <h4 className="font-avenir text-xs tracking-widest uppercase mb-4 text-[#FDF6F3]/60">Shop</h4>
                         <ul className="space-y-2 font-avenir font-light text-sm">
                             <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Unique Prints</button></li>
-                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Formal Prints</button></li>
+                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Official Prints</button></li>
                             <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">New Arrivals</button></li>
                         </ul>
                     </div>
@@ -237,11 +233,7 @@ const HomePage = () => {
                 </div>
             </footer>
 
-            {/* Chat widget */}
-            <button className="fixed bottom-6 right-6 flex items-center gap-2 bg-[#A96142] text-white pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-[#8f5037] transition-colors font-avenir text-sm z-50">
-                <ChatIcon size={18} />
-                Let's Chat!
-            </button>
+
         </div>
     );
 };
