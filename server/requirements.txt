@@ -6,3 +6,4 @@ pg8000
 pydantic-settings
 email-validator
 python-dotenv
+imagekitio
