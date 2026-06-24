@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext.jsx';
 import { useParams, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.PNG';
 import Navbar from '../components/common/Navbar.jsx';
@@ -80,10 +81,11 @@ export default function ProductPage() {
     const productId = Number(id);
     const product = PRODUCTS.find(p => p.id === productId) ?? PRODUCTS[0];
 
+    const { cartItems, addToCart } = useCart();
     const [qty, setQty] = useState(1);
-    const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-    const [cartCount, setCartCount] = useState(0);
+    const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
     const [addedMsg, setAddedMsg] = useState('');
+    const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
     // Reset state when product changes
     useEffect(() => {
@@ -101,7 +103,7 @@ export default function ProductPage() {
     }
 
     function handleAddToCart() {
-        setCartCount((c) => c + qty);
+        addToCart(product, selectedSize, qty, product.color || 'Standard');
         setAddedMsg(`${qty} × ${product.name} (${selectedSize}) added!`);
         setTimeout(() => setAddedMsg(''), 3000);
     }

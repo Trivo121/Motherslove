@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCart } from '../context/CartContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.PNG';
 import Navbar from '../components/common/Navbar.jsx';
@@ -78,11 +79,7 @@ import Navbar from '../components/common/Navbar.jsx';
    ─────────────────────────────────────────────────────────────────────────
 */
 
-/* ---------- Mock cart (swap with your cart context / Supabase state) ---------- */
-const MOCK_CART = [
-    { id: 'P001', name: 'Classic Crew Neck Tee', color: 'Sand', size: 'M', qty: 1, price: 550, img: null },
-    { id: 'P003', name: 'Striped Boatneck Tee', color: 'Navy', size: 'S', qty: 2, price: 680, img: null },
-];
+
 
 const FREE_SHIPPING_THRESHOLD = 999;
 const SHIPPING_COST = 99;
@@ -268,6 +265,7 @@ function OrderSummary({ cart, total, subtotal, shipping }) {
 /* ---------- Page ---------- */
 export default function CheckoutPage() {
     const navigate = useNavigate();
+    const { cartItems, clearCart } = useCart();
 
     /* — Form state — */
     const [form, setForm] = useState({
@@ -280,10 +278,13 @@ export default function CheckoutPage() {
     const [placed, setPlaced] = useState(false);
 
     /* — Calculations — */
-    const subtotal = MOCK_CART.reduce((sum, item) => sum + item.price * item.qty, 0);
-    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+    const subtotal = cartItems.reduce((sum, item) => {
+        let priceNum = typeof item.price === 'string' ? parseInt(item.price.replace(/\D/g, '')) || 0 : item.price || 0;
+        return sum + (priceNum * item.qty);
+    }, 0);
+    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
     const total = subtotal + shipping;
-    const cartCount = MOCK_CART.reduce((sum, item) => sum + item.qty, 0);
+    const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
 
     function setField(key, value) {
         setForm((prev) => ({ ...prev, [key]: value }));
@@ -322,19 +323,48 @@ export default function CheckoutPage() {
 
         setPlacing(true);
 
-        /* ── TODO: Replace this block with the Paytm integration ─────────────
-           (See the detailed step-by-step at the top of this file)
+        try {
+            const payload = {
+                shipping_name: form.name,
+                shipping_email: form.email,
+                shipping_phone: form.phone,
+                shipping_flat: form.flat,
+                shipping_street: form.street,
+                shipping_city: form.city,
+                shipping_state: form.state,
+                shipping_pincode: form.pincode,
+                items: cartItems.map(item => ({
+                    product_id: item.id,
+                    quantity: item.qty,
+                    size: item.size,
+                    color: item.color
+                }))
+            };
 
-           const res = await fetch('/api/create-paytm-order', { ... });
-           const { txnToken, mid, orderId } = await res.json();
-           new window.Paytm.CheckoutJS.invoke({ ...config });
-           ─────────────────────────────────────────────────────────────────── */
+            const res = await fetch('http://127.0.0.1:8000/api/orders/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-        // Simulated delay — remove once Paytm is wired up:
-        await new Promise((r) => setTimeout(r, 1500));
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.detail || 'Failed to validate order');
+            }
 
-        setPlacing(false);
-        setPlaced(true);
+            const orderData = await res.json();
+            console.log("Order created:", orderData);
+
+            // TODO: Here is where you will initialize Paytm using orderData.total_amount and orderData.id
+            
+            clearCart();
+            setPlaced(true);
+        } catch (err) {
+            console.error(err);
+            alert("Checkout Error: " + err.message);
+        } finally {
+            setPlacing(false);
+        }
     }
 
     /* ─── Order placed confirmation ─── */
@@ -579,7 +609,7 @@ export default function CheckoutPage() {
 
                     {/* ──────────── RIGHT: Order summary ──────────── */}
                     <OrderSummary
-                        cart={MOCK_CART}
+                        cart={cartItems}
                         subtotal={subtotal}
                         shipping={shipping}
                         total={total}

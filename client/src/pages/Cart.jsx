@@ -15,7 +15,7 @@ const ArrowLeftIcon = (props) => <Icon {...props}><path d="M19 12H5M12 19l-7-7 7
 
 
 
-import { PRODUCTS } from '../data/products.js';
+import { useCart } from '../context/CartContext.jsx';
 
 export default function CartPage() {
     const navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function CartPage() {
 
     return (
         <div className="min-h-screen bg-[#F8F7F5] font-avenir flex flex-col">
-            <Navbar />
+            <Navbar cartCount={cartItems.reduce((acc, item) => acc + item.qty, 0)} />
             <div className="flex-1 max-w-6xl mx-auto w-full px-6 py-16">
                 <div className="flex items-center justify-between mb-10">
                     <h1 className="font-poppins text-4xl font-light text-[#2D3329]">Your Cart</h1>

@@ -14,9 +14,11 @@ import AdminProductForm from './pages/Admin/ProductForm.jsx'
 import CheckoutPage from './pages/Checkout.jsx'
 import UserProfile from './pages/UserProfile.jsx'
 
+import { CartProvider } from './context/CartContext.jsx'
+
 function App() {
   return (
-    <>
+    <CartProvider>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
@@ -37,7 +39,7 @@ function App() {
         <Route path="/profile" element={<UserProfile />} />
       </Routes>
       <AuthModal />
-    </>
+    </CartProvider>
   )
 }
 
