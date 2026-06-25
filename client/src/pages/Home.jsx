@@ -194,7 +194,7 @@ const HomePage = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                     {featuredProducts.map((p) => (
                         <div key={p.id} onClick={() => navigate(`/product/${p.id}`)} className="group cursor-pointer">
-                            <div className="relative aspect-[5/4] overflow-hidden bg-[#FDF6F3] mb-3">
+                            <div className="relative aspect-[4/5] overflow-hidden bg-[#FDF6F3] mb-3">
                                 <img src={p.img} alt={p.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 {p.badge && (
                                     <span className="absolute top-3 left-3 bg-black text-white text-[10px] tracking-wider px-2 py-1 font-avenir">{p.badge}</span>
