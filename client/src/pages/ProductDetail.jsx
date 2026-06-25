@@ -167,7 +167,7 @@ export default function ProductPage() {
             <Navbar cartCount={cartCount} />
 
             {/* Breadcrumb + Prev/Next */}
-            <div className="px-6 md:px-10 py-5 flex items-center justify-between border-b border-[#2D3329]/8">
+            <div className="bg-[#FDF6F3] px-6 md:px-10 py-5 flex items-center justify-between border-b border-[#2D3329]/8">
                 <nav className="flex items-center gap-2 text-sm font-avenir text-[#737373]">
                     <a href="#" className="hover:text-[#A96142] transition-colors">Home</a>
                     <ChevronRightIcon size={14} />
