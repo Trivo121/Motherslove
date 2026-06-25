@@ -282,7 +282,11 @@ export default function CheckoutPage() {
 
             if (!res.ok) {
                 const errorData = await res.json();
-                throw new Error(errorData.detail || 'Failed to validate order');
+                let errMsg = errorData.detail || 'Failed to validate order';
+                if (Array.isArray(errMsg)) {
+                    errMsg = errMsg.map(e => `${e.loc.join('.')}: ${e.msg}`).join(', ');
+                }
+                throw new Error(errMsg);
             }
 
             const orderData = await res.json();
