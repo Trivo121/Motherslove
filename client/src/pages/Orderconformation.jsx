@@ -187,7 +187,7 @@ export default function OrderConfirmation() {
                                 {/* Thumbnail */}
                                 <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 bg-[#FDF6F3] flex items-center justify-center overflow-hidden">
                                     {item.img
-                                        ? <img src={item.img} alt={item.name} className="w-full h-full object-contain" />
+                                        ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
                                         : <span className="font-poppins text-2xl font-light text-[#A96142]/30 select-none">
                                             {item.name.charAt(0)}
                                         </span>

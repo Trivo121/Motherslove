@@ -53,7 +53,7 @@ function ProductCard({ product }) {
                     <img
                         src={product.img}
                         alt={product.name}
-                        className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                 </div>
                 <h3 className="mt-4 font-avenir text-[#2D3329] text-base truncate">{product.name}</h3>

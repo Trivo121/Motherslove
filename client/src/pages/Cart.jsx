@@ -60,7 +60,7 @@ export default function CartPage() {
                                     <tr key={idx} className="border-b border-[#2D3329]/10">
                                         <td className="py-6 flex items-center gap-4">
                                             <div className="w-20 h-24 bg-white shrink-0 p-1 border border-[#2D3329]/10">
-                                                {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-contain" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
+                                                {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
                                             </div>
                                             <div>
                                                 <p className="text-[#2D3329] text-base">{item.name}</p>
