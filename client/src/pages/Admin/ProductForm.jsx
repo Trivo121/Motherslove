@@ -125,7 +125,7 @@ export default function AdminProductForm() {
 
     const EMPTY_FORM = {
         name: '', price: '', description: '',
-        sizes: [], imagePreview: null,
+        sizes: [], imagePreviews: [null, null, null, null],
         published: true, tags: [], stock: '',
         category: 'unique',
     };
@@ -136,7 +136,7 @@ export default function AdminProductForm() {
     const [success, setSuccess] = useState(false);
     const [notFound, setNotFound] = useState(false);
 
-    const [imageFile, setImageFile] = useState(null);
+    const [imageFiles, setImageFiles] = useState([null, null, null, null]);
 
     /* Populate form when editing */
     useEffect(() => {
@@ -155,7 +155,9 @@ export default function AdminProductForm() {
                     price: String(product.price),
                     description: product.description || '',
                     sizes: product.sizes || [],
-                    imagePreview: product.image_url || null,
+                    imagePreviews: (product.image_urls && product.image_urls.length > 0) ? 
+                        [...product.image_urls, ...Array(4 - product.image_urls.length).fill(null)].slice(0, 4) : 
+                        [product.image_url || null, null, null, null],
                     published: product.published,
                     tags: product.tags || [],
                     stock: String(product.stock),
@@ -193,13 +195,38 @@ export default function AdminProductForm() {
         );
     }
 
-    function handleImageChange(e) {
+    function handleImageChange(index, e) {
         const file = e.target.files?.[0];
         if (!file) return;
-        setImageFile(file);
+        
+        setImageFiles(prev => {
+            const newFiles = [...prev];
+            newFiles[index] = file;
+            return newFiles;
+        });
+        
         const reader = new FileReader();
-        reader.onload = (ev) => set('imagePreview', ev.target.result);
+        reader.onload = (ev) => {
+            setForm(prev => {
+                const newPreviews = [...prev.imagePreviews];
+                newPreviews[index] = ev.target.result;
+                return { ...prev, imagePreviews: newPreviews };
+            });
+        };
         reader.readAsDataURL(file);
+    }
+    
+    function removeImage(index) {
+        setImageFiles(prev => {
+            const newFiles = [...prev];
+            newFiles[index] = null;
+            return newFiles;
+        });
+        setForm(prev => {
+            const newPreviews = [...prev.imagePreviews];
+            newPreviews[index] = null;
+            return { ...prev, imagePreviews: newPreviews };
+        });
     }
 
     function validate() {
@@ -217,15 +244,20 @@ export default function AdminProductForm() {
 
         setSaving(true);
         try {
-            let imageUrl = form.imagePreview;
-            if (imageFile) {
-                const uploadedUrl = await uploadToImageKit(imageFile);
-                if (!uploadedUrl) {
-                    setSaving(false);
-                    return;
+            let imageUrls = [...form.imagePreviews];
+            for (let i = 0; i < 4; i++) {
+                if (imageFiles[i]) {
+                    const uploadedUrl = await uploadToImageKit(imageFiles[i]);
+                    if (uploadedUrl) {
+                        imageUrls[i] = uploadedUrl;
+                    } else {
+                        setSaving(false);
+                        return;
+                    }
                 }
-                imageUrl = uploadedUrl;
             }
+            // Filter out nulls for backend array
+            const validImageUrls = imageUrls.filter(url => url !== null);
 
             const payload = {
                 name: form.name,
@@ -234,7 +266,8 @@ export default function AdminProductForm() {
                 stock: Number(form.stock || 0),
                 category: form.category,
                 published: form.published,
-                image_url: imageUrl,
+                image_url: validImageUrls.length > 0 ? validImageUrls[0] : null,
+                image_urls: validImageUrls,
                 sizes: form.sizes,
                 tags: form.tags,
             };
@@ -377,57 +410,50 @@ export default function AdminProductForm() {
                 </FormSection>
 
                 {/* ─── Image ─── */}
-                <FormSection title="Product Image">
-                    <div className="flex flex-col sm:flex-row gap-5 items-start">
-                        {/* Preview */}
-                        <div className="w-32 h-32 shrink-0 border border-[#2D3329]/15 bg-[#F8F7F5] flex items-center justify-center overflow-hidden">
-                            {form.imagePreview ? (
-                                <img
-                                    src={form.imagePreview}
-                                    alt="Preview"
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <ImagePlaceholderIcon size={28} className="text-[#2D3329]/20" />
-                            )}
-                        </div>
-
-                        {/* Upload zone */}
-                        <div className="flex-1 w-full space-y-3">
-                            <button
-                                type="button"
-                                onClick={() => fileRef.current?.click()}
-                                className="w-full border border-dashed border-[#2D3329]/20 py-8 flex flex-col items-center gap-2 hover:border-[#A96142] hover:bg-[#FDF6F3] transition-colors"
-                            >
-                                <UploadIcon size={20} className="text-[#737373]" />
-                                <p className="font-avenir text-sm text-[#737373]">
-                                    Click to upload an image
-                                </p>
-                                <p className="font-avenir text-xs text-[#737373]/60">
-                                    PNG or JPG, up to 5 MB
-                                </p>
-                            </button>
-
-                            <input
-                                ref={fileRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden"
-                            />
-
-                            {form.imagePreview && (
-                                <button
-                                    type="button"
-                                    onClick={() => set('imagePreview', null)}
-                                    className="flex items-center gap-1.5 font-avenir text-xs text-red-500 hover:text-red-700 transition-colors"
-                                >
-                                    <XIcon size={12} />
-                                    Remove image
-                                </button>
-                            )}
-                        </div>
+                <FormSection title="Product Images (Up to 4)">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {[0, 1, 2, 3].map((index) => (
+                            <div key={index} className="flex flex-col gap-2">
+                                <label className="w-full aspect-square border border-[#2D3329]/15 bg-[#F8F7F5] flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-[#A96142] transition-colors relative group">
+                                    {form.imagePreviews[index] ? (
+                                        <>
+                                            <img
+                                                src={form.imagePreviews[index]}
+                                                alt={`Preview ${index + 1}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <UploadIcon size={24} className="text-white" />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex flex-col items-center text-[#737373] group-hover:text-[#A96142] transition-colors">
+                                            <UploadIcon size={24} className="mb-2" />
+                                            <span className="font-avenir text-xs">Image {index + 1}</span>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageChange(index, e)}
+                                        className="hidden"
+                                    />
+                                </label>
+                                {form.imagePreviews[index] && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(index)}
+                                        className="flex items-center justify-center gap-1.5 font-avenir text-xs text-red-500 hover:text-red-700 transition-colors"
+                                    >
+                                        <XIcon size={12} /> Remove
+                                    </button>
+                                )}
+                            </div>
+                        ))}
                     </div>
+                    <p className="font-avenir text-xs text-[#737373]/60 mt-2">
+                        First image will be used as the primary thumbnail. PNG or JPG, up to 5 MB per image.
+                    </p>
                 </FormSection>
 
                 {/* ─── Sizes ─── */}

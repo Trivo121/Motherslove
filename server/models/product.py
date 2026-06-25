@@ -15,6 +15,7 @@ class Product(Base):
     stock = Column(Integer, nullable=False, default=0)
     published = Column(Boolean, nullable=False, server_default=text("false"))
     image_url = Column(String, nullable=True)
+    image_urls = Column(ARRAY(String), nullable=False, server_default=text("'{}'::text[]"))
     sizes = Column(ARRAY(String), nullable=False, server_default=text("'{}'::text[]"))
     tags = Column(ARRAY(String), nullable=False, server_default=text("'{}'::text[]"))
     

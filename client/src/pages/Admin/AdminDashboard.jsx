@@ -155,13 +155,13 @@ export default function AdminDashboard() {
                 const res = await fetch(`${API_URL}/products`);
                 if (res.ok) {
                     const data = await res.json();
-                    
+
                     setStats(prev => ({
                         ...prev,
                         totalProducts: data.length,
                         lowStockCount: data.filter(p => p.stock < 5).length
                     }));
-                    
+
                     const mappedLowStock = data.filter(p => p.stock < 5).map(p => ({
                         name: p.name,
                         color: p.category || 'Standard',
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
             {/* Greeting */}
             <div>
                 <p className="font-avenir text-xs text-[#737373] uppercase tracking-widest mb-1">{today}</p>
-                <h2 className="font-poppins text-2xl font-light text-[#2D3329]">Good morning, Owner 👋</h2>
+                <h2 className="font-poppins text-2xl font-light text-[#2D3329]">Hello, Sunnu....</h2>
             </div>
 
             {/* Stat grid */}

@@ -16,6 +16,7 @@ class ProductBase(BaseModel):
 
 class ProductCreate(ProductBase):
     image_url: Optional[str] = None
+    image_urls: List[str] = []
 
 class ProductUpdate(BaseModel):
     sku: Optional[str] = None
@@ -26,12 +27,14 @@ class ProductUpdate(BaseModel):
     stock: Optional[int] = None
     published: Optional[bool] = None
     image_url: Optional[str] = None
+    image_urls: Optional[List[str]] = None
     sizes: Optional[List[str]] = None
     tags: Optional[List[str]] = None
 
 class ProductOut(ProductBase):
     id: UUID
     image_url: Optional[str] = None
+    image_urls: List[str] = []
     created_at: datetime
     updated_at: datetime
 

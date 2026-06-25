@@ -143,8 +143,8 @@ export default function ProductPage() {
         return <div className="min-h-screen bg-white flex items-center justify-center">Product not found</div>;
     }
 
-    const images = product.images?.length
-        ? product.images
+    const images = (product.image_urls && product.image_urls.length > 0)
+        ? [...product.image_urls, ...Array(4 - product.image_urls.length).fill(null)].slice(0, 4)
         : [product.img, null, null, null];
 
     const currentIndex = allProducts.findIndex(p => p.id === product.id);
@@ -314,7 +314,7 @@ export default function ProductPage() {
                             <p><span className="text-[#2D3329]">Material:</span> {product.material}</p>
                         </Accordion>
                         <Accordion title="Return &amp; Refund Policy">
-                            <p>We accept returns within 14 days of delivery for unused, unwashed items in their original packaging. Sale items are final sale. To start a return, email <span className="text-[#A96142]">hello@motherslove.in</span> with your order number.</p>
+                            <p>We accept returns within 14 days of delivery for unused, unwashed items in their original packaging. Sale items are final sale. To start a return, email <span className="text-[#A96142]">sunnusunnu649@gmail.com</span> with your order number.</p>
                         </Accordion>
                         <Accordion title="Shipping Info">
                             <ul className="space-y-1 list-none">
