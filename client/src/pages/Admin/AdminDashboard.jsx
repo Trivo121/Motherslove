@@ -141,11 +141,40 @@ function Section({ title, children, action }) {
 }
 
 /* ---------- Dashboard ---------- */
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 export default function AdminDashboard() {
     const navigate = useNavigate();
-    const [stats] = useState(MOCK_STATS);
-    const [orders] = useState(MOCK_ORDERS);
-    const [lowStock] = useState(MOCK_LOW_STOCK);
+    const [stats, setStats] = useState(MOCK_STATS);
+    const [orders, setOrders] = useState(MOCK_ORDERS);
+    const [lowStock, setLowStock] = useState(MOCK_LOW_STOCK);
+
+    useEffect(() => {
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    setStats(prev => ({
+                        ...prev,
+                        totalProducts: data.length,
+                        lowStockCount: data.filter(p => p.stock < 5).length
+                    }));
+                    
+                    const mappedLowStock = data.filter(p => p.stock < 5).map(p => ({
+                        name: p.name,
+                        color: p.category || 'Standard',
+                        stock: p.stock
+                    }));
+                    setLowStock(mappedLowStock);
+                }
+            } catch (err) {
+                console.error("Failed to fetch products:", err);
+            }
+        }
+        fetchProducts();
+    }, []);
 
     /* Swap for real fetch:
     useEffect(() => {

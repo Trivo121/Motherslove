@@ -3,7 +3,6 @@ import { useCart } from '../context/CartContext.jsx';
 import { useParams, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.PNG';
 import Navbar from '../components/common/Navbar.jsx';
-import { PRODUCTS } from '../data/products.js';
 
 /* ---------- Icons ---------- */
 const Icon = ({ children, size = 20, className = '' }) => (
@@ -82,39 +81,75 @@ function SizePicker({ sizes, selected, onSelect }) {
 }
 
 /* ---------- Main page ---------- */
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 export default function ProductPage() {
     const { id } = useParams();
     const routerNavigate = useNavigate();
 
-    const productId = Number(id);
-    const product = PRODUCTS.find(p => p.id === productId) ?? PRODUCTS[0];
+    const [product, setProduct] = useState(null);
+    const [allProducts, setAllProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const { cartItems, addToCart } = useCart();
     const [qty, setQty] = useState(1);
-    const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
+    const [selectedSize, setSelectedSize] = useState('M');
     const [addedMsg, setAddedMsg] = useState('');
-    // NEW — tracks which of the 4 gallery images is shown in the main viewer
     const [activeImgIndex, setActiveImgIndex] = useState(0);
     const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
-    // NEW — use product.images if you've added it to your data, otherwise
-    //        fall back to the existing single img + 3 null placeholders.
-    //        When you're ready, add  images: [img1, img2, img3, img4]  to
-    //        each product in products.js and it'll work automatically.
+    useEffect(() => {
+        async function fetchData() {
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const mapped = data.map(p => ({
+                        ...p,
+                        img: p.image_url,
+                        priceFormatted: `₹${p.price.toLocaleString('en-IN')}.00`,
+                        badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
+                        color: p.category || 'Standard'
+                    }));
+                    setAllProducts(mapped);
+                    
+                    const found = mapped.find(p => String(p.id) === String(id));
+                    setProduct(found || mapped[0]);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchData();
+    }, [id]);
+
+    useEffect(() => {
+        if (product) {
+            setQty(1);
+            setSelectedSize(product.sizes?.[0] || 'M');
+            setAddedMsg('');
+            setActiveImgIndex(0);
+        }
+    }, [product]);
+
+    if (loading) {
+        return <div className="min-h-screen bg-white flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#A96142] border-t-transparent rounded-full animate-spin"></div></div>;
+    }
+
+    if (!product) {
+        return <div className="min-h-screen bg-white flex items-center justify-center">Product not found</div>;
+    }
+
     const images = product.images?.length
         ? product.images
         : [product.img, null, null, null];
 
-    // Reset state when product changes
-    useEffect(() => {
-        setQty(1);
-        setSelectedSize(product.sizes[0]);
-        setAddedMsg('');
-        setActiveImgIndex(0); // NEW — reset gallery to first image
-    }, [product]);
-
-    const prevId = (productId - 1 + PRODUCTS.length) % PRODUCTS.length;
-    const nextId = (productId + 1) % PRODUCTS.length;
+    const currentIndex = allProducts.findIndex(p => p.id === product.id);
+    const prevId = allProducts[(currentIndex - 1 + allProducts.length) % allProducts.length]?.id;
+    const nextId = allProducts[(currentIndex + 1) % allProducts.length]?.id;
 
     function goToProduct(newId) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -222,7 +257,7 @@ export default function ProductPage() {
                         {product.name}
                     </h1>
                     <p className="font-avenir text-sm text-[#737373] mt-2">{product.sku}</p>
-                    <p className="font-avenir text-xl text-[#A96142] mt-5">{product.price}</p>
+                    <p className="font-avenir text-xl text-[#A96142] mt-5">{product.priceFormatted || product.price}</p>
 
                     <div className="mt-7">
                         <SizePicker
@@ -297,7 +332,7 @@ export default function ProductPage() {
             <section className="bg-[#FDF6F3] px-6 md:px-10 py-16">
                 <h2 className="font-poppins text-2xl font-light text-[#2D3329] text-center mb-10">You May Also Like</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                    {PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4).map((p) => (
+                    {allProducts.filter((p) => p.id !== product.id).slice(0, 4).map((p) => (
                         <button
                             key={p.id}
                             onClick={() => goToProduct(p.id)}
@@ -311,7 +346,7 @@ export default function ProductPage() {
                                 />
                             </div>
                             <p className="mt-3 font-avenir text-[#2D3329] text-sm">{p.name}</p>
-                            <p className="font-avenir text-[#A96142] text-sm">{p.price}</p>
+                            <p className="font-avenir text-[#A96142] text-sm">{p.priceFormatted || p.price}</p>
                         </button>
                     ))}
                 </div>

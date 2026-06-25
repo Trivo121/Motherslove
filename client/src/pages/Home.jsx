@@ -7,7 +7,6 @@ import unique3 from '../assets/unique/unique3.PNG';
 import unique4 from '../assets/unique/unique 4.PNG';
 import uniqCover from '../assets/unique/uniq cover.PNG';
 import formalCover from '../assets/formal/formal cover.JPEG';
-import { PRODUCTS } from '../data/products.js';
 import Navbar from '../components/common/Navbar.jsx';
 
 /* ---------- Inline icons (no external icon package) ---------- */
@@ -65,6 +64,8 @@ const PrimaryButton = ({ children, className = '', ...props }) => (
     </button>
 );
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 const HomePage = () => {
     const [isVisible, setIsVisible] = useState(false);
     const navigate = useNavigate();
@@ -89,7 +90,32 @@ const HomePage = () => {
         },
     ];
 
-    const featuredProducts = PRODUCTS.slice(0, 4);
+    const [featuredProducts, setFeaturedProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const mapped = data.map(p => ({
+                        ...p,
+                        img: p.image_url,
+                        priceFormatted: `₹${p.price.toLocaleString('en-IN')}.00`,
+                        badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
+                        color: p.category || 'Standard'
+                    }));
+                    setFeaturedProducts(mapped.slice(0, 4));
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchProducts();
+    }, []);
 
     return (
         <div className={`min-h-screen bg-white transition-opacity duration-700 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
