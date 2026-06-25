@@ -138,14 +138,16 @@ export default function AllProductsPage() {
                         <div className="w-8 h-8 border-2 border-[#A96142] border-t-transparent rounded-full animate-spin"></div>
                     </div>
                 ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 max-w-6xl mx-auto">
-                    {visibleProducts.map((product) => (
-                        <ProductCard key={product.name} product={product} />
-                    ))}
-                </div>
-                {visibleProducts.length === 0 && (
-                    <p className="text-center text-[#737373] py-12">No products in this category yet.</p>
-                )}
+                <>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 max-w-6xl mx-auto">
+                        {visibleProducts.map((product) => (
+                            <ProductCard key={product.name} product={product} />
+                        ))}
+                    </div>
+                    {visibleProducts.length === 0 && (
+                        <p className="text-center text-[#737373] py-12">No products in this category yet.</p>
+                    )}
+                </>
             )}
             </section>
 
