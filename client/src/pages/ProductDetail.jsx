@@ -208,7 +208,7 @@ export default function ProductPage() {
                                 key={activeImgIndex}
                                 src={images[activeImgIndex]}
                                 alt={product.name}
-                                className="w-full h-full object-cover transition-opacity duration-300"
+                                className="w-full h-full object-contain transition-opacity duration-300"
                             />
                         ) : (
                             /* Placeholder shown when the image slot is still null */
@@ -234,7 +234,7 @@ export default function ProductPage() {
                                     <img
                                         src={img}
                                         alt={`View ${i + 1}`}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-contain"
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-[#F0EBE8] flex items-center justify-center">
@@ -302,7 +302,7 @@ export default function ProductPage() {
                         >
                             Add to Cart
                         </button>
-                        <button onClick={() => routerNavigate('/checkout')} className="w-full bg-[#2D3329] text-white font-avenir py-3 hover:bg-[#3f4a39] transition-colors">
+                        <button onClick={() => { addToCart(product, selectedSize, qty, product.color || 'Standard'); routerNavigate('/checkout'); }} className="w-full bg-[#2D3329] text-white font-avenir py-3 hover:bg-[#3f4a39] transition-colors">
                             Buy Now
                         </button>
                     </div>
@@ -342,7 +342,7 @@ export default function ProductPage() {
                                 <img
                                     src={p.img}
                                     alt={p.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                                 />
                             </div>
                             <p className="mt-3 font-avenir text-[#2D3329] text-sm">{p.name}</p>

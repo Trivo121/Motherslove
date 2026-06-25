@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useCart } from '../context/CartContext.jsx';
 import Navbar from '../components/common/Navbar.jsx';
 
 /* =========================================================================
@@ -39,6 +40,7 @@ function FilterPill({ label, active, onClick }) {
 
 function ProductCard({ product }) {
     const navigate = useNavigate();
+    const { addToCart } = useCart();
     return (
         <div className="group block relative">
             <Link to={`/product/${product.id}`} className="block">
@@ -51,7 +53,7 @@ function ProductCard({ product }) {
                     <img
                         src={product.img}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                 </div>
                 <h3 className="mt-4 font-avenir text-[#2D3329] text-base truncate">{product.name}</h3>
@@ -59,7 +61,7 @@ function ProductCard({ product }) {
                 <p className="font-avenir text-[#A96142] mt-1">{product.priceFormatted || product.price}</p>
             </Link>
             <button 
-                onClick={(e) => { e.preventDefault(); navigate('/checkout'); }}
+                onClick={(e) => { e.preventDefault(); addToCart(product, product.sizes?.[0] || 'M', 1, product.color || 'Standard'); navigate('/checkout'); }}
                 className="mt-3 w-full bg-white border border-[#2D3329] text-[#2D3329] font-avenir py-2 text-sm hover:bg-[#2D3329] hover:text-white transition-colors"
             >
                 Buy Now
