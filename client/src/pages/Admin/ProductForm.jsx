@@ -22,7 +22,7 @@ import { PRODUCT_SIZES, PRODUCT_TAGS } from './ProductData';
      const publicUrl = supabase.storage.from('product-images').getPublicUrl(`${id}.jpg`);
    ========================================================================= */
 
-const API_URL = 'http://127.0.0.1:8000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 const uploadToImageKit = async (file) => {
   try {

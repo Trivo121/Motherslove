@@ -4,7 +4,7 @@ import Navbar from '../components/common/Navbar.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from './Login.jsx';
 
-const API_URL = 'http://127.0.0.1:8000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 /* =========================================================================
    ROUTER — add to App.jsx:
