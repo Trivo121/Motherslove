@@ -77,6 +77,9 @@ export default function Navbar({ cartCount = 0 }) {
                                 <div className="px-4 py-2 border-b border-[#2D3329]/10 text-[#737373] text-xs break-all mb-1">
                                     {user.email}
                                 </div>
+                                {profile?.role === 'admin' && (
+                                    <button onClick={() => { setAccountOpen(false); navigate('/admin'); }} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Admin Dashboard</button>
+                                )}
                                 <button onClick={() => { setAccountOpen(false); navigate('/profile'); }} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">My Profile</button>
                                 <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Out</button>
                             </>
