@@ -13,6 +13,7 @@ import AdminProductForm from './pages/Admin/ProductForm.jsx'
 
 import CheckoutPage from './pages/Checkout.jsx'
 import UserProfile from './pages/UserProfile.jsx'
+import OrderConfirmation from './pages/Orderconformation.jsx'
 
 import { CartProvider } from './context/CartContext.jsx'
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/product/:id" element={<ProductPage />} />
 
         {/* Admin Routes (No auth protection yet for previewing purposes) */}

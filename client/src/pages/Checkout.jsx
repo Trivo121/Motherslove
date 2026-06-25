@@ -315,8 +315,49 @@ export default function CheckoutPage() {
                             throw new Error("Payment verification failed");
                         }
                         
+                        const orderState = {
+                            id: orderData.id,
+                            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+                            customer: {
+                                name: form.name,
+                                email: form.email,
+                                phone: form.phone
+                            },
+                            items: cartItems.map(item => ({
+                                name: item.name,
+                                price: item.price,
+                                color: item.color,
+                                size: item.size,
+                                qty: item.qty,
+                                img: item.img
+                            })),
+                            note: '',
+                            subtotal: subtotal,
+                            shipping: shipping,
+                            total: total,
+                            deliveryAddress: {
+                                name: form.name,
+                                flat: form.flat,
+                                street: form.street,
+                                city: form.city,
+                                state: form.state,
+                                pincode: form.pincode,
+                                phone: form.phone
+                            },
+                            billingAddress: {
+                                name: form.name,
+                                flat: form.flat,
+                                street: form.street,
+                                city: form.city,
+                                state: form.state,
+                                pincode: form.pincode,
+                                phone: form.phone
+                            },
+                            estimatedDelivery: '3–5 Business Days',
+                            paymentMethod: 'Razorpay'
+                        };
                         clearCart();
-                        setPlaced(true);
+                        navigate('/order-confirmation', { state: { order: orderState } });
                     } catch (err) {
                         alert("Payment verification error: " + err.message);
                     } finally {
@@ -348,55 +389,12 @@ export default function CheckoutPage() {
             // We don't setPlacing(false) here because the modal is open.
             // It will be set in ondismiss or handler.
             return;
-                        setPlaced(true);
         } catch (err) {
             console.error(err);
             alert("Checkout Error: " + err.message);
         } finally {
             setPlacing(false);
         }
-    }
-
-    /* ─── Order placed confirmation ─── */
-    if (placed) {
-        return (
-            <div className="min-h-screen bg-[#F8F7F5] font-avenir flex flex-col">
-                <Navbar cartCount={cartCount} />
-                <div className="flex-1 flex items-center justify-center px-6 py-24">
-                    <div className="text-center space-y-6 max-w-sm">
-                        <div className="w-16 h-16 bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
-                            <CheckIcon size={26} className="text-emerald-600" />
-                        </div>
-                        <div>
-                            <h2 className="font-poppins text-3xl font-light text-[#2D3329] mb-2">
-                                Order Placed!
-                            </h2>
-                            <p className="font-avenir text-sm text-[#737373] leading-relaxed">
-                                Thank you, {form.name.split(' ')[0] || 'there'}. A confirmation has been sent to{' '}
-                                <span className="text-[#2D3329]">{form.email}</span>.
-                            </p>
-                        </div>
-                        <div className="pt-2 border-t border-[#2D3329]/8">
-                            <p className="font-avenir text-xs text-[#737373] mb-4">
-                                Expected delivery in 3–5 business days.
-                            </p>
-                            <button
-                                onClick={() => navigate('/shop')}
-                                className="px-8 py-3 bg-[#A96142] text-white font-avenir text-sm hover:bg-[#8f5237] transition-colors"
-                            >
-                                Continue Shopping
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <footer className="bg-[#2D3329] text-white px-6 md:px-10 py-10">
-                    <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-avenir">
-                        <span className="tracking-widest">MOTHER'S LOVE</span>
-                        <span className="text-white/60">© 2026 Mother's Love. All rights reserved.</span>
-                    </div>
-                </footer>
-            </div>
-        );
     }
 
     /* ─── Main checkout layout ─── */

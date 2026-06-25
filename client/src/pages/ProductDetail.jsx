@@ -18,6 +18,14 @@ const BagIcon = (p) => <Icon {...p}><path d="M6 7h12l1 13H5L6 7z" /><path d="M9 
 const ChatIcon = (p) => <Icon {...p}><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" /></Icon>;
 const PlusIcon = (p) => <Icon {...p}><path d="M12 5v14M5 12h14" /></Icon>;
 const MinusIcon = (p) => <Icon {...p}><path d="M5 12h14" /></Icon>;
+// NEW — used for placeholder thumbnails
+const ImageIcon = (p) => (
+    <Icon {...p}>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <path d="M21 15l-5-5L5 21" />
+    </Icon>
+);
 
 
 
@@ -77,7 +85,7 @@ function SizePicker({ sizes, selected, onSelect }) {
 export default function ProductPage() {
     const { id } = useParams();
     const routerNavigate = useNavigate();
-    
+
     const productId = Number(id);
     const product = PRODUCTS.find(p => p.id === productId) ?? PRODUCTS[0];
 
@@ -85,13 +93,24 @@ export default function ProductPage() {
     const [qty, setQty] = useState(1);
     const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
     const [addedMsg, setAddedMsg] = useState('');
+    // NEW — tracks which of the 4 gallery images is shown in the main viewer
+    const [activeImgIndex, setActiveImgIndex] = useState(0);
     const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
+    // NEW — use product.images if you've added it to your data, otherwise
+    //        fall back to the existing single img + 3 null placeholders.
+    //        When you're ready, add  images: [img1, img2, img3, img4]  to
+    //        each product in products.js and it'll work automatically.
+    const images = product.images?.length
+        ? product.images
+        : [product.img, null, null, null];
 
     // Reset state when product changes
     useEffect(() => {
         setQty(1);
         setSelectedSize(product.sizes[0]);
         setAddedMsg('');
+        setActiveImgIndex(0); // NEW — reset gallery to first image
     }, [product]);
 
     const prevId = (productId - 1 + PRODUCTS.length) % PRODUCTS.length;
@@ -140,21 +159,57 @@ export default function ProductPage() {
 
             {/* Main content */}
             <div className="max-w-6xl mx-auto px-6 md:px-10 py-14 grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20">
-                {/* Left — image */}
+                {/* Left — image gallery */}
                 <div>
+                    {/* ── Main viewer ── */}
                     <div className="aspect-[4/5] overflow-hidden bg-[#FDF6F3] relative">
                         {product.badge && (
                             <span className="absolute top-4 left-4 z-10 bg-[#A96142] text-white text-xs font-avenir tracking-wide px-3 py-1">
                                 {product.badge}
                             </span>
                         )}
-                        <img
-                            key={product.id}
-                            src={product.img}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-opacity duration-300"
-                        />
+                        {images[activeImgIndex] ? (
+                            <img
+                                key={activeImgIndex}
+                                src={images[activeImgIndex]}
+                                alt={product.name}
+                                className="w-full h-full object-cover transition-opacity duration-300"
+                            />
+                        ) : (
+                            /* Placeholder shown when the image slot is still null */
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-[#F0EBE8]">
+                                <ImageIcon size={48} className="text-[#2D3329]/20" />
+                                <p className="font-avenir text-sm text-[#2D3329]/30 mt-3">Image Coming Soon</p>
+                            </div>
+                        )}
                     </div>
+
+                    {/* ── Thumbnail strip (4 slots) ── */}
+                    <div className="grid grid-cols-4 gap-2 mt-3">
+                        {images.map((img, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setActiveImgIndex(i)}
+                                className={`aspect-square overflow-hidden border-2 transition-colors ${activeImgIndex === i
+                                    ? 'border-[#A96142]'
+                                    : 'border-transparent hover:border-[#2D3329]/20'
+                                    }`}
+                            >
+                                {img ? (
+                                    <img
+                                        src={img}
+                                        alt={`View ${i + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-[#F0EBE8] flex items-center justify-center">
+                                        <ImageIcon size={16} className="text-[#2D3329]/25" />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
                     {/* Caption below image */}
                     <p className="mt-5 font-avenir text-sm text-[#737373] leading-relaxed">
                         {product.description}
