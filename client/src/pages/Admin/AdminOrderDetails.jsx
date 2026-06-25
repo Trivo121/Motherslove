@@ -323,7 +323,7 @@ export default function AdminOrderDetail() {
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-14 bg-[#FDF6F3] flex-shrink-0 overflow-hidden">
                                                     <img src={item.img} alt={item.name}
-                                                        className="w-full h-full object-cover" />
+                                                        className="w-full h-full object-contain" />
                                                 </div>
                                                 <p className="text-[#2D3329]">{item.name}</p>
                                             </div>

@@ -110,7 +110,7 @@ function DeleteModal({ product, onConfirm, onCancel }) {
 /* ---------- Product image / placeholder ---------- */
 function ProductThumbnail({ image_url, name }) {
     if (image_url) {
-        return <img src={image_url} alt={name} className="w-full h-full object-cover" />;
+        return <img src={image_url} alt={name} className="w-full h-full object-contain" />;
     }
     return (
         <div className="w-full h-full bg-[#FDF6F3] flex items-center justify-center">

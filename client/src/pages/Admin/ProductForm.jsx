@@ -385,7 +385,7 @@ export default function AdminProductForm() {
                                 <img
                                     src={form.imagePreview}
                                     alt="Preview"
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-contain"
                                 />
                             ) : (
                                 <ImagePlaceholderIcon size={28} className="text-[#2D3329]/20" />

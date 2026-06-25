@@ -129,7 +129,7 @@ function OrderSummary({ cart, total, subtotal, shipping }) {
                         {/* Thumbnail */}
                         <div className="w-16 h-16 shrink-0 bg-[#FDF6F3] flex items-center justify-center overflow-hidden relative">
                             {item.img
-                                ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                                ? <img src={item.img} alt={item.name} className="w-full h-full object-contain" />
                                 : <span className="font-poppins text-2xl font-light text-[#A96142]/30 select-none">
                                     {item.name.charAt(0)}
                                 </span>

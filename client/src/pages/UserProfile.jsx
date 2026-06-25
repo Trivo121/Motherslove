@@ -723,7 +723,7 @@ export default function UserProfile() {
                                                 {/* Thumbnail */}
                                                 <div className="w-14 h-14 shrink-0 bg-[#FDF6F3] flex items-center justify-center overflow-hidden">
                                                     {item.img
-                                                        ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                                                        ? <img src={item.img} alt={item.name} className="w-full h-full object-contain" />
                                                         : <span className="font-poppins text-xl font-light text-[#A96142]/30 select-none">
                                                             {item.name.charAt(0)}
                                                         </span>
