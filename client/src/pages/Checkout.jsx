@@ -273,7 +273,8 @@ export default function CheckoutPage() {
                 }))
             };
 
-            const res = await fetch('http://127.0.0.1:8000/api/orders/checkout', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+            const res = await fetch(`${API_URL}/orders/checkout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -295,7 +296,7 @@ export default function CheckoutPage() {
                 order_id: orderData.razorpay_order_id,
                 handler: async function (response) {
                     try {
-                        const verifyRes = await fetch('http://127.0.0.1:8000/api/orders/verify-payment', {
+                        const verifyRes = await fetch(`${API_URL}/orders/verify-payment`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({

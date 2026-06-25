@@ -6,5 +6,5 @@ pg8000
 pydantic-settings
 email-validator
 python-dotenv
-imagekitio
+imagekitio==4.2.0
 razorpay
