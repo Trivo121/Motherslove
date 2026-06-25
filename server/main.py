@@ -13,8 +13,7 @@ app = FastAPI(title="Mother's Love API")
 origins = [
     "http://localhost:5173", # Vite default
     "http://127.0.0.1:5173",
-    "https://www.motherslove.site", # Production URL
-    "*" # Allow all for now to prevent Vercel preview domain CORS issues
+    "https://www.motherslove.site" # Production URL
 ]
 
 app.add_middleware(
