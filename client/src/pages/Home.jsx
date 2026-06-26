@@ -33,24 +33,22 @@ const ArrowIcon = (props) => (
         <path d="M7 17L17 7M7 7h10v10" />
     </Icon>
 );
-const LeafIcon = (props) => (
+const SparkIcon = (props) => (
     <Icon {...props}>
-        <path d="M5 21c8 0 13-5 13-15-10 0-13 6-13 15z" />
-        <path d="M5 21c1-5 4-9 8-12" />
+        <path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" />
     </Icon>
 );
-const BadgeIcon = (props) => (
+const DiamondIcon = (props) => (
     <Icon {...props}>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M8 12l3 3 5-6" />
+        <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
+        <path d="M6 3l6 6 6-6" />
+        <path d="M2 9h20" />
+        <path d="M12 21V9" />
     </Icon>
 );
-const TruckIcon = (props) => (
+const HeartIcon = (props) => (
     <Icon {...props}>
-        <path d="M3 16V7h10v9" />
-        <path d="M13 10h4l4 4v2h-8" />
-        <circle cx="7" cy="18" r="1.5" />
-        <circle cx="17" cy="18" r="1.5" />
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </Icon>
 );
 
@@ -133,11 +131,11 @@ const HomePage = () => {
             {/* Hero */}
             <header className="px-6 md:px-10 py-16 text-center">
                 <h1 className="font-poppins font-extralight text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#2D3329] leading-tight">
-                    Sustainable. Beautiful. Ethical.
+                    Simple. Meaningful. Yours.
                 </h1>
                 <div className="h-px max-w-lg mx-auto my-7 bg-gradient-to-r from-transparent via-[#2D3329]/25 to-transparent" />
                 <p className="font-avenir font-light text-xl text-[#737373] max-w-xl mx-auto mb-9">
-                    Mindfully crafted essentials, designed to last a lifetime.
+                    A small brand creating comfortable tees that feel like home.
                 </p>
                 <PrimaryButton onClick={() => navigate('/shop')}>Shop Now</PrimaryButton>
             </header>
@@ -160,25 +158,24 @@ const HomePage = () => {
                 ))}
             </section>
 
-            {/* Ethically Made */}
+            {/* Woven With Love */}
             <section className="bg-[#FDF6F3] py-20 px-6 text-center">
-                <h2 className="font-poppins font-extralight text-3xl md:text-4xl text-[#2D3329] mb-5">Ethically Made</h2>
+                <h2 className="font-poppins font-extralight text-3xl md:text-4xl text-[#2D3329] mb-5">Woven With Love</h2>
                 <p className="font-avenir font-light text-base text-[#737373] max-w-2xl mx-auto leading-relaxed mb-14">
-                    Every piece is designed with intention. We use only sustainable materials and partner with
-                    fair-trade certified factories to keep our footprint as light as possible.
+                    MothersLove is a small brand born from a cherished memory. We design bold prints and classic solids meant to bring comfort and heart to your everyday life.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 max-w-3xl mx-auto">
                     <div className="flex flex-col items-center gap-3">
-                        <LeafIcon size={28} className="text-[#A96142]" />
-                        <p className="font-avenir text-sm text-[#2D3329]">Organic Materials</p>
+                        <SparkIcon size={28} className="text-[#A96142]" />
+                        <p className="font-avenir text-sm text-[#2D3329]">Unique Prints</p>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <BadgeIcon size={28} className="text-[#A96142]" />
-                        <p className="font-avenir text-sm text-[#2D3329]">Fair-Trade Certified</p>
+                        <DiamondIcon size={28} className="text-[#A96142]" />
+                        <p className="font-avenir text-sm text-[#2D3329]">Formal Solids</p>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <TruckIcon size={28} className="text-[#A96142]" />
-                        <p className="font-avenir text-sm text-[#2D3329]">Carbon-Neutral Shipping</p>
+                        <HeartIcon size={28} className="text-[#A96142]" />
+                        <p className="font-avenir text-sm text-[#2D3329]">Meaningful Roots</p>
                     </div>
                 </div>
             </section>
