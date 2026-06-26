@@ -33,22 +33,26 @@ const ArrowIcon = (props) => (
         <path d="M7 17L17 7M7 7h10v10" />
     </Icon>
 );
-const SparkIcon = (props) => (
+const PaletteIcon = (props) => (
     <Icon {...props}>
-        <path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" />
+        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
     </Icon>
 );
-const DiamondIcon = (props) => (
+const ShirtIcon = (props) => (
     <Icon {...props}>
-        <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
-        <path d="M6 3l6 6 6-6" />
-        <path d="M2 9h20" />
-        <path d="M12 21V9" />
+        <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
     </Icon>
 );
-const HeartIcon = (props) => (
+const SproutIcon = (props) => (
     <Icon {...props}>
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        <path d="M7 20h10" />
+        <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+        <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+        <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
     </Icon>
 );
 
@@ -166,15 +170,15 @@ const HomePage = () => {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 max-w-3xl mx-auto">
                     <div className="flex flex-col items-center gap-3">
-                        <SparkIcon size={28} className="text-[#A96142]" />
+                        <PaletteIcon size={28} className="text-[#A96142]" />
                         <p className="font-avenir text-sm text-[#2D3329]">Unique Prints</p>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <DiamondIcon size={28} className="text-[#A96142]" />
+                        <ShirtIcon size={28} className="text-[#A96142]" />
                         <p className="font-avenir text-sm text-[#2D3329]">Formal Solids</p>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <HeartIcon size={28} className="text-[#A96142]" />
+                        <SproutIcon size={28} className="text-[#A96142]" />
                         <p className="font-avenir text-sm text-[#2D3329]">Meaningful Roots</p>
                     </div>
                 </div>
