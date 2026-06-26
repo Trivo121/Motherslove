@@ -197,7 +197,7 @@ export default function AdminDashboard() {
             {/* Greeting */}
             <div>
                 <p className="font-avenir text-xs text-[#737373] uppercase tracking-widest mb-1">{today}</p>
-                <h2 className="font-poppins text-2xl font-light text-[#2D3329]">Hello, Sunnu....</h2>
+                <h2 className="font-poppins text-2xl font-light text-[#2D3329]">Hello, Sunnu M4....</h2>
             </div>
 
             {/* Stat grid */}
