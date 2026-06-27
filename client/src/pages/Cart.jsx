@@ -18,7 +18,7 @@ import { useCart } from '../context/CartContext.jsx';
 export default function CartPage() {
     const navigate = useNavigate();
     const { cartItems, updateQuantity, removeFromCart } = useCart();
-    
+
     const subtotal = cartItems.reduce((acc, item) => {
         let priceNum = 0;
         if (typeof item.price === 'string') {
@@ -28,8 +28,8 @@ export default function CartPage() {
         }
         return acc + (priceNum * item.qty);
     }, 0);
-    
-    const shipping = subtotal > 999 || subtotal === 0 ? 0 : 99;
+
+    const shipping = 0;
     const total = subtotal + shipping;
 
     return (
@@ -42,7 +42,7 @@ export default function CartPage() {
                         <ArrowLeftIcon size={16} /> Continue Shopping
                     </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     <div className="lg:col-span-2 overflow-x-auto">
                         <table className="w-full text-left font-avenir min-w-[500px]">
@@ -57,30 +57,31 @@ export default function CartPage() {
                                 {cartItems.map((item, idx) => {
                                     let priceNum = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : item.price || 0;
                                     return (
-                                    <tr key={idx} className="border-b border-[#2D3329]/10">
-                                        <td className="py-6 flex items-center gap-4">
-                                            <div className="w-20 h-24 bg-white shrink-0 p-1 border border-[#2D3329]/10">
-                                                {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
-                                            </div>
-                                            <div>
-                                                <p className="text-[#2D3329] text-base">{item.name}</p>
-                                                <p className="text-[#737373] text-sm mt-1">Size: {item.size}</p>
-                                                <p className="text-[#A96142] text-sm mt-1">₹{priceNum.toLocaleString('en-IN')}</p>
-                                                <button onClick={() => removeFromCart(item.id, item.size, item.color)} className="text-[#A96142] text-xs underline mt-2 hover:text-red-600 transition-colors">Remove</button>
-                                            </div>
-                                        </td>
-                                        <td className="py-6 text-center">
-                                            <div className="flex items-center justify-center border border-[#2D3329]/25 w-fit mx-auto">
-                                                <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty - 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">-</button>
-                                                <span className="text-[#2D3329] font-avenir w-8 flex items-center justify-center">{item.qty}</span>
-                                                <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty + 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">+</button>
-                                            </div>
-                                        </td>
-                                        <td className="py-6 text-right text-[#2D3329] text-lg">
-                                            ₹{(priceNum * item.qty).toLocaleString('en-IN')}
-                                        </td>
-                                    </tr>
-                                )})}
+                                        <tr key={idx} className="border-b border-[#2D3329]/10">
+                                            <td className="py-6 flex items-center gap-4">
+                                                <div className="w-20 h-24 bg-white shrink-0 p-1 border border-[#2D3329]/10">
+                                                    {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
+                                                </div>
+                                                <div>
+                                                    <p className="text-[#2D3329] text-base">{item.name}</p>
+                                                    <p className="text-[#737373] text-sm mt-1">Size: {item.size}</p>
+                                                    <p className="text-[#A96142] text-sm mt-1">₹{priceNum.toLocaleString('en-IN')}</p>
+                                                    <button onClick={() => removeFromCart(item.id, item.size, item.color)} className="text-[#A96142] text-xs underline mt-2 hover:text-red-600 transition-colors">Remove</button>
+                                                </div>
+                                            </td>
+                                            <td className="py-6 text-center">
+                                                <div className="flex items-center justify-center border border-[#2D3329]/25 w-fit mx-auto">
+                                                    <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty - 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">-</button>
+                                                    <span className="text-[#2D3329] font-avenir w-8 flex items-center justify-center">{item.qty}</span>
+                                                    <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty + 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">+</button>
+                                                </div>
+                                            </td>
+                                            <td className="py-6 text-right text-[#2D3329] text-lg">
+                                                ₹{(priceNum * item.qty).toLocaleString('en-IN')}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>

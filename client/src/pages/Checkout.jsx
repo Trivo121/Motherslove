@@ -18,7 +18,7 @@ import Navbar from '../components/common/Navbar.jsx';
 
 
 const FREE_SHIPPING_THRESHOLD = 999;
-const SHIPPING_COST = 99;
+const SHIPPING_COST = 0;
 
 /* ---------- Indian states ---------- */
 const INDIAN_STATES = [

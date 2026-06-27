@@ -11,7 +11,7 @@ from schemas.order import OrderCreate, OrderResponse, OrderStatusUpdate
 router = APIRouter()
 
 FREE_SHIPPING_THRESHOLD = 999
-SHIPPING_COST = 99
+SHIPPING_COST = 0
 
 @router.post("/checkout", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 def checkout_cart(order_data: OrderCreate, db: Session = Depends(get_db)):
