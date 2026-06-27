@@ -5,7 +5,7 @@ import unique1 from '../assets/unique/Unique1.PNG';
 import unique2 from '../assets/unique/unique2.PNG';
 import unique3 from '../assets/unique/unique3.PNG';
 import unique4 from '../assets/unique/unique 4.PNG';
-import uniqCover from '../assets/unique/uniq cover.PNG';
+import uniqCover from '../assets/unique/justice.PNG';
 import formalCover from '../assets/formal/formal cover.JPEG';
 import Navbar from '../components/common/Navbar.jsx';
 
@@ -33,26 +33,24 @@ const ArrowIcon = (props) => (
         <path d="M7 17L17 7M7 7h10v10" />
     </Icon>
 );
-const PaletteIcon = (props) => (
+const LeafIcon = (props) => (
     <Icon {...props}>
-        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
-        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
-        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
-        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+        <path d="M5 21c8 0 13-5 13-15-10 0-13 6-13 15z" />
+        <path d="M5 21c1-5 4-9 8-12" />
     </Icon>
 );
-const ShirtIcon = (props) => (
+const BadgeIcon = (props) => (
     <Icon {...props}>
-        <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+        <circle cx="12" cy="12" r="9" />
+        <path d="M8 12l3 3 5-6" />
     </Icon>
 );
-const SproutIcon = (props) => (
+const TruckIcon = (props) => (
     <Icon {...props}>
-        <path d="M7 20h10" />
-        <path d="M10 20c5.5-2.5.8-6.4 3-10" />
-        <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
-        <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+        <path d="M3 16V7h10v9" />
+        <path d="M13 10h4l4 4v2h-8" />
+        <circle cx="7" cy="18" r="1.5" />
+        <circle cx="17" cy="18" r="1.5" />
     </Icon>
 );
 
@@ -135,11 +133,11 @@ const HomePage = () => {
             {/* Hero */}
             <header className="px-6 md:px-10 py-16 text-center">
                 <h1 className="font-poppins font-extralight text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#2D3329] leading-tight">
-                    Simple. Meaningful. Yours.
+                    Sustainable. Beautiful. Ethical.
                 </h1>
                 <div className="h-px max-w-lg mx-auto my-7 bg-gradient-to-r from-transparent via-[#2D3329]/25 to-transparent" />
                 <p className="font-avenir font-light text-xl text-[#737373] max-w-xl mx-auto mb-9">
-                    A small brand creating comfortable tees that feel like home.
+                    Mindfully crafted essentials, designed to last a lifetime.
                 </p>
                 <PrimaryButton onClick={() => navigate('/shop')}>Shop Now</PrimaryButton>
             </header>
@@ -162,24 +160,25 @@ const HomePage = () => {
                 ))}
             </section>
 
-            {/* Woven With Love */}
+            {/* Ethically Made */}
             <section className="bg-[#FDF6F3] py-20 px-6 text-center">
-                <h2 className="font-poppins font-extralight text-3xl md:text-4xl text-[#2D3329] mb-5">Woven With Love</h2>
+                <h2 className="font-poppins font-extralight text-3xl md:text-4xl text-[#2D3329] mb-5">Ethically Made</h2>
                 <p className="font-avenir font-light text-base text-[#737373] max-w-2xl mx-auto leading-relaxed mb-14">
-                    MothersLove is a small brand born from a cherished memory. We design bold prints and classic solids meant to bring comfort and heart to your everyday life.
+                    Every piece is designed with intention. We use only sustainable materials and partner with
+                    fair-trade certified factories to keep our footprint as light as possible.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 max-w-3xl mx-auto">
                     <div className="flex flex-col items-center gap-3">
-                        <PaletteIcon size={28} className="text-[#A96142]" />
-                        <p className="font-avenir text-sm text-[#2D3329]">Unique Prints</p>
+                        <LeafIcon size={28} className="text-[#A96142]" />
+                        <p className="font-avenir text-sm text-[#2D3329]">Organic Materials</p>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <ShirtIcon size={28} className="text-[#A96142]" />
-                        <p className="font-avenir text-sm text-[#2D3329]">Formal Solids</p>
+                        <BadgeIcon size={28} className="text-[#A96142]" />
+                        <p className="font-avenir text-sm text-[#2D3329]">Fair-Trade Certified</p>
                     </div>
                     <div className="flex flex-col items-center gap-3">
-                        <SproutIcon size={28} className="text-[#A96142]" />
-                        <p className="font-avenir text-sm text-[#2D3329]">Meaningful Roots</p>
+                        <TruckIcon size={28} className="text-[#A96142]" />
+                        <p className="font-avenir text-sm text-[#2D3329]">Carbon-Neutral Shipping</p>
                     </div>
                 </div>
             </section>
@@ -211,7 +210,7 @@ const HomePage = () => {
             {/* Newsletter */}
             <section className="bg-[#FDF6F3] py-16 px-6 text-center">
                 <h2 className="font-poppins font-extralight text-2xl md:text-3xl text-[#2D3329] mb-3">Join the Movement</h2>
-                <p className="font-avenir font-light text-sm text-[#737373] mb-7">Sign up for early access to new drops and sustainability stories.</p>
+                <p className="font-avenir font-light text-sm text-[#737373] mb-7">Sign up for early access to new drops, offers, and updates.</p>
                 <form className="flex max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
                     <input
                         type="email"
