@@ -1,6 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ORDERS, STATUS_STEPS, STATUS_CONFIG } from './orderData';
+import { STATUS_STEPS, STATUS_CONFIG } from './orderData';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 /* ---------- Icons ---------- */
 const I = ({ children, size = 18, className = '' }) => (
@@ -16,7 +18,7 @@ const XIcon = (p) => <I {...p}><path d="M18 6L6 18M6 6l12 12" /></I>;
 
 /* ---------- Helpers ---------- */
 function orderTotal(order) {
-    return order.items.reduce((s, i) => s + i.price * i.qty, 0);
+    return order.total_amount;
 }
 
 function fmtAmount(n) {
@@ -28,9 +30,10 @@ function fmtDate(iso) {
 }
 
 function itemSummary(order) {
-    const total = order.items.reduce((s, i) => s + i.qty, 0);
-    const first = order.items[0].name;
-    return total === 1 ? first : `${first} + ${total - 1} more`;
+    if (!order.items || order.items.length === 0) return 'No items';
+    const total = order.items.reduce((s, i) => s + i.quantity, 0);
+    const first = order.items[0].product ? order.items[0].product.name : 'Product';
+    return total <= 1 ? first : `${first} + ${total - 1} more`;
 }
 
 /* ---------- Status badge ---------- */
@@ -45,12 +48,12 @@ function StatusBadge({ status }) {
 }
 
 /* ---------- Status tabs ---------- */
-function Tabs({ active, onChange }) {
+function Tabs({ orders, active, onChange }) {
     const all = ['All', ...STATUS_STEPS];
     return (
         <div className="flex gap-1 overflow-x-auto pb-px scrollbar-hide">
             {all.map((s) => {
-                const count = s === 'All' ? ORDERS.length : ORDERS.filter((o) => o.status === s).length;
+                const count = s === 'All' ? orders.length : orders.filter((o) => o.status === s).length;
                 const isActive = active === s;
                 return (
                     <button
@@ -81,14 +84,14 @@ function TableRow({ order, onClick }) {
         >
             <td className="px-6 py-4">
                 <span className="font-avenir text-sm text-[#A96142] group-hover:underline underline-offset-2">
-                    #{order.id}
+                    #{order.id.split('-')[0].toUpperCase()}
                 </span>
             </td>
             <td className="px-6 py-4">
-                <p className="font-avenir text-sm text-[#2D3329]">{order.customer.name}</p>
-                <p className="font-avenir text-xs text-[#737373]">{order.customer.email}</p>
+                <p className="font-avenir text-sm text-[#2D3329]">{order.shipping_name}</p>
+                <p className="font-avenir text-xs text-[#737373]">{order.shipping_email}</p>
             </td>
-            <td className="px-6 py-4 font-avenir text-sm text-[#737373] whitespace-nowrap">{fmtDate(order.date)}</td>
+            <td className="px-6 py-4 font-avenir text-sm text-[#737373] whitespace-nowrap">{fmtDate(order.created_at)}</td>
             <td className="px-6 py-4 font-avenir text-sm text-[#2D3329] max-w-[180px] truncate">{itemSummary(order)}</td>
             <td className="px-6 py-4 font-avenir text-sm text-[#2D3329] whitespace-nowrap">{fmtAmount(orderTotal(order))}</td>
             <td className="px-6 py-4"><StatusBadge status={order.status} /></td>
@@ -108,15 +111,15 @@ function OrderCard({ order, onClick }) {
         >
             <div className="flex items-start justify-between mb-3">
                 <div>
-                    <p className="font-avenir text-sm text-[#A96142]">#{order.id}</p>
-                    <p className="font-avenir text-base text-[#2D3329]">{order.customer.name}</p>
+                    <p className="font-avenir text-sm text-[#A96142]">#{order.id.split('-')[0].toUpperCase()}</p>
+                    <p className="font-avenir text-base text-[#2D3329]">{order.shipping_name}</p>
                 </div>
                 <StatusBadge status={order.status} />
             </div>
             <div className="flex items-end justify-between">
                 <div>
                     <p className="font-avenir text-xs text-[#737373]">{itemSummary(order)}</p>
-                    <p className="font-avenir text-xs text-[#737373] mt-0.5">{fmtDate(order.date)}</p>
+                    <p className="font-avenir text-xs text-[#737373] mt-0.5">{fmtDate(order.created_at)}</p>
                 </div>
                 <div className="flex items-center gap-1">
                     <p className="font-poppins text-lg font-light text-[#2D3329]">{fmtAmount(orderTotal(order))}</p>
@@ -132,15 +135,31 @@ export default function AdminOrders() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState('All');
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+        async function fetchOrders() {
+            try {
+                const res = await fetch(`${API_URL}/orders`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setOrders(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch orders:", err);
+            }
+        }
+        fetchOrders();
+    }, []);
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
-        return ORDERS.filter((o) => {
+        return orders.filter((o) => {
             const matchTab = activeTab === 'All' || o.status === activeTab;
-            const matchSearch = !q || o.id.toLowerCase().includes(q) || o.customer.name.toLowerCase().includes(q);
+            const matchSearch = !q || o.id.toLowerCase().includes(q) || o.shipping_name.toLowerCase().includes(q);
             return matchTab && matchSearch;
         });
-    }, [search, activeTab]);
+    }, [search, activeTab, orders]);
 
     function goToOrder(id) { navigate(`/admin/orders/${id}`); }
 
@@ -176,7 +195,7 @@ export default function AdminOrders() {
 
                 {/* Status tabs */}
                 <div className="border-b border-[#2D3329]/8 px-4">
-                    <Tabs active={activeTab} onChange={setActiveTab} />
+                    <Tabs orders={orders} active={activeTab} onChange={setActiveTab} />
                 </div>
 
                 {/* Desktop table */}

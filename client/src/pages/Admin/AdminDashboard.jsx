@@ -145,47 +145,77 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
-    const [stats, setStats] = useState(MOCK_STATS);
-    const [orders, setOrders] = useState(MOCK_ORDERS);
-    const [lowStock, setLowStock] = useState(MOCK_LOW_STOCK);
+    const [stats, setStats] = useState({
+        todayOrders: 0,
+        todayDelta: '',
+        trendUp: true,
+        pendingOrders: 0,
+        pendingDelta: '',
+        revenue: '₹0',
+        revenueDelta: '',
+        revenueUp: true,
+        totalProducts: 0,
+        lowStockCount: 0,
+    });
+    const [orders, setOrders] = useState([]);
+    const [lowStock, setLowStock] = useState([]);
 
     useEffect(() => {
-        async function fetchProducts() {
+        async function fetchData() {
             try {
-                const res = await fetch(`${API_URL}/products`);
-                if (res.ok) {
-                    const data = await res.json();
-
+                // Fetch Products
+                const resProducts = await fetch(`${API_URL}/products`);
+                if (resProducts.ok) {
+                    const data = await resProducts.json();
                     setStats(prev => ({
                         ...prev,
                         totalProducts: data.length,
                         lowStockCount: data.filter(p => p.stock < 5).length
                     }));
-
-                    const mappedLowStock = data.filter(p => p.stock < 5).map(p => ({
+                    setLowStock(data.filter(p => p.stock < 5).map(p => ({
                         name: p.name,
                         color: p.category || 'Standard',
                         stock: p.stock
+                    })));
+                }
+
+                // Fetch Orders
+                const resOrders = await fetch(`${API_URL}/orders`);
+                if (resOrders.ok) {
+                    const data = await resOrders.json();
+                    
+                    const mappedOrders = data.slice(0, 5).map(o => {
+                        const productNames = o.items.map(i => i.product ? i.product.name : 'Unknown').join(', ');
+                        return {
+                            id: `#${o.id.split('-')[0].toUpperCase()}`,
+                            rawId: o.id,
+                            customer: o.shipping_name,
+                            product: productNames || 'Various Items',
+                            amount: `₹${o.total_amount.toLocaleString('en-IN')}`,
+                            status: o.status,
+                            date: new Date(o.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+                        };
+                    });
+                    setOrders(mappedOrders);
+
+                    const todayStr = new Date().toISOString().slice(0, 10);
+                    const todayOrders = data.filter(o => o.created_at.startsWith(todayStr));
+                    const pendingOrders = data.filter(o => o.status === 'PENDING' || o.status === 'PROCESSING');
+                    const revenue = data.reduce((acc, o) => acc + o.total_amount, 0);
+
+                    setStats(prev => ({
+                        ...prev,
+                        todayOrders: todayOrders.length,
+                        pendingOrders: pendingOrders.length,
+                        revenue: `₹${revenue.toLocaleString('en-IN')}`
                     }));
-                    setLowStock(mappedLowStock);
                 }
             } catch (err) {
-                console.error("Failed to fetch products:", err);
+                console.error("Failed to fetch dashboard data:", err);
             }
         }
-        fetchProducts();
+        fetchData();
     }, []);
-
-    /* Swap for real fetch:
-    useEffect(() => {
-      async function load() {
-        const { data } = await supabase.from('orders')
-          .select('id, status, total, created_at, customer_name, product_name')
-          .order('created_at', { ascending: false }).limit(5);
-        setOrders(data ?? []);
-      }
-      load();
-    }, []); */
 
     const today = new Date().toLocaleDateString('en-IN', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -261,7 +291,7 @@ export default function AdminDashboard() {
                                     {orders.map((o, i) => (
                                         <tr
                                             key={o.id}
-                                            onClick={() => navigate(`/admin/orders/${o.id.replace('#', '')}`)}
+                                            onClick={() => navigate(`/admin/orders/${o.rawId}`)}
                                             className="border-b border-[#2D3329]/5 hover:bg-[#FDF6F3] cursor-pointer transition-colors"
                                         >
                                             <td className="px-6 py-4 text-[#A96142] font-light whitespace-nowrap">{o.id}</td>

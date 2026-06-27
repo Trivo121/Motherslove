@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from uuid import UUID
+from typing import List
 
 from core.database import get_db
 from models.order import Order, OrderItem, OrderStatus
 from models.product import Product
-from schemas.order import OrderCreate, OrderResponse
+from schemas.order import OrderCreate, OrderResponse, OrderStatusUpdate
 
 router = APIRouter()
 
@@ -164,3 +165,54 @@ def verify_payment(payload: PaymentVerification, db: Session = Depends(get_db)):
     db.refresh(order)
 
     return {"status": "success", "message": "Payment verified successfully", "order_id": order.id}
+
+
+@router.get("/", response_model=List[OrderResponse])
+def get_all_orders(db: Session = Depends(get_db)):
+    """
+    Retrieve all orders (admin functionality).
+    """
+    orders = db.query(Order).options(
+        joinedload(Order.items).joinedload(OrderItem.product)
+    ).order_by(Order.created_at.desc()).all()
+    return orders
+
+
+@router.get("/{order_id}", response_model=OrderResponse)
+def get_order_by_id(order_id: UUID, db: Session = Depends(get_db)):
+    """
+    Retrieve a specific order by ID.
+    """
+    order = db.query(Order).options(
+        joinedload(Order.items).joinedload(OrderItem.product)
+    ).filter(Order.id == order_id).first()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+        
+    return order
+
+
+@router.put("/{order_id}/status", response_model=OrderResponse)
+def update_order_status(order_id: UUID, status_update: OrderStatusUpdate, db: Session = Depends(get_db)):
+    """
+    Update the status of a specific order.
+    """
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+        
+    try:
+        new_status = OrderStatus(status_update.status)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid order status")
+        
+    order.status = new_status
+    db.commit()
+    
+    # Refresh with joined items
+    order = db.query(Order).options(
+        joinedload(Order.items).joinedload(OrderItem.product)
+    ).filter(Order.id == order_id).first()
+    
+    return order

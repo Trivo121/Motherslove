@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ORDERS, STATUS_STEPS, STATUS_FLOW, STATUS_CONFIG } from './orderData';
+import { STATUS_STEPS, STATUS_FLOW, STATUS_CONFIG } from './orderData';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 /* ---------- Icons ---------- */
 const I = ({ children, size = 18, className = '' }) => (
@@ -21,7 +23,7 @@ const AlertIcon = (p) => <I {...p}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h1
 
 /* ---------- Helpers ---------- */
 function orderTotal(order) {
-    return order.items.reduce((s, i) => s + i.price * i.qty, 0);
+    return order.total_amount;
 }
 function fmt(n) { return `₹${n.toLocaleString('en-IN')}`; }
 function fmtDate(iso, opts = {}) {
@@ -158,14 +160,43 @@ export default function AdminOrderDetail() {
     const { orderId } = useParams();
     const navigate = useNavigate();
 
-    const order = ORDERS.find((o) => o.id === orderId);
-    const orderIdx = ORDERS.findIndex((o) => o.id === orderId);
-
-    /* Local status state — replace setState with a Supabase update later:
-       await supabase.from('orders').update({ status: next }).eq('id', orderId);  */
-    const [status, setStatus] = useState(order?.status ?? 'Confirmed');
+    const [order, setOrder] = useState(null);
+    const [ordersList, setOrdersList] = useState([]);
+    const [status, setStatus] = useState('');
     const [showConfirm, setShowConfirm] = useState(false);
     const [toast, setToast] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchOrder() {
+            setLoading(true);
+            try {
+                const resList = await fetch(`${API_URL}/orders`);
+                if (resList.ok) {
+                    const listData = await resList.json();
+                    setOrdersList(listData);
+                }
+
+                const res = await fetch(`${API_URL}/orders/${orderId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setOrder(data);
+                    setStatus(data.status);
+                }
+            } catch (err) {
+                console.error("Failed to fetch order details:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchOrder();
+    }, [orderId]);
+
+    const orderIdx = ordersList.findIndex((o) => o.id === orderId);
+
+    if (loading) {
+        return <div className="py-24 text-center text-[#737373] font-avenir">Loading order details...</div>;
+    }
 
     if (!order) {
         return (
@@ -179,17 +210,35 @@ export default function AdminOrderDetail() {
     }
 
     const nextStatus = STATUS_FLOW[status];
-    const subtotal = orderTotal(order);
-    const shipping = subtotal >= 999 ? 0 : 99;
-    const total = subtotal + shipping;
+    const subtotal = order.subtotal;
+    const shipping = order.shipping_cost;
+    const total = order.total_amount;
 
-    const prevOrder = ORDERS[orderIdx - 1];
-    const nextOrder = ORDERS[orderIdx + 1];
+    const prevOrder = ordersList[orderIdx - 1];
+    const nextOrder = ordersList[orderIdx + 1];
 
-    function handleConfirmStatus() {
-        setStatus(nextStatus);
-        setShowConfirm(false);
-        setToast(`Status updated to "${nextStatus}"`);
+    async function handleConfirmStatus() {
+        try {
+            const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: nextStatus })
+            });
+            
+            if (res.ok) {
+                const updatedOrder = await res.json();
+                setOrder(updatedOrder);
+                setStatus(updatedOrder.status);
+                setShowConfirm(false);
+                setToast(`Status updated to "${updatedOrder.status}"`);
+            } else {
+                console.error("Failed to update status");
+                setShowConfirm(false);
+            }
+        } catch (err) {
+            console.error(err);
+            setShowConfirm(false);
+        }
     }
 
     return (
@@ -224,9 +273,9 @@ export default function AdminOrderDetail() {
                 <div className="bg-white border border-[#2D3329]/8 px-6 py-5 flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p className="font-avenir text-xs text-[#737373] uppercase tracking-widest mb-1">Order</p>
-                        <h1 className="font-poppins text-2xl font-light text-[#2D3329]">#{order.id}</h1>
+                        <h1 className="font-poppins text-2xl font-light text-[#2D3329]">#{order.id.split('-')[0].toUpperCase()}</h1>
                         <p className="font-avenir text-xs text-[#737373] mt-1">
-                            {fmtDate(order.date)} at {fmtTime(order.date)}
+                            {fmtDate(order.created_at)} at {fmtTime(order.created_at)}
                         </p>
                     </div>
                     <StatusBadge status={status} large />
@@ -244,19 +293,18 @@ export default function AdminOrderDetail() {
                     <div className="lg:col-span-3">
                         <Card title="Customer Details">
                             <div className="space-y-4">
-                                <InfoRow icon={UserIcon} label="Name" value={order.customer.name} />
-                                <InfoRow icon={MailIcon} label="Email" value={order.customer.email} />
-                                <InfoRow icon={PhoneIcon} label="Phone" value={order.customer.phone} />
+                                <InfoRow icon={UserIcon} label="Name" value={order.shipping_name} />
+                                <InfoRow icon={MailIcon} label="Email" value={order.shipping_email} />
+                                <InfoRow icon={PhoneIcon} label="Phone" value={order.shipping_phone} />
                                 <div className="border-t border-[#2D3329]/8 pt-4">
                                     <div className="flex items-start gap-3">
                                         <PinIcon size={16} className="text-[#A96142] mt-0.5 flex-shrink-0" />
                                         <div>
                                             <p className="font-avenir text-xs text-[#737373] mb-1">Shipping Address</p>
                                             <p className="font-avenir text-sm text-[#2D3329] leading-relaxed">
-                                                {order.customer.address.line1}
-                                                {order.customer.address.line2 && <><br />{order.customer.address.line2}</>}
+                                                {order.shipping_flat && `${order.shipping_flat}, `}{order.shipping_street}
                                                 <br />
-                                                {order.customer.address.city}, {order.customer.address.state} — {order.customer.address.pin}
+                                                {order.shipping_city}, {order.shipping_state} — {order.shipping_pincode}
                                             </p>
                                         </div>
                                     </div>
@@ -322,26 +370,29 @@ export default function AdminOrderDetail() {
                                         <td className="py-4 pr-6">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-14 bg-[#FDF6F3] flex-shrink-0 overflow-hidden">
-                                                    <img src={item.img} alt={item.name}
-                                                        className="w-full h-full object-cover" />
+                                                    {item.product && item.product.image_url ? (
+                                                        <img src={item.product.image_url} alt={item.product.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-xs text-[#737373]">No Img</div>
+                                                    )}
                                                 </div>
-                                                <p className="text-[#2D3329]">{item.name}</p>
+                                                <p className="text-[#2D3329]">{item.product ? item.product.name : 'Unknown Product'}</p>
                                             </div>
                                         </td>
                                         {/* Size */}
                                         <td className="py-4 pr-6">
                                             <span className="inline-block border border-[#2D3329]/25 px-2.5 py-0.5 text-xs text-[#2D3329] font-medium">
-                                                {item.size}
+                                                {item.size || '-'}
                                             </span>
                                         </td>
                                         {/* Colour */}
-                                        <td className="py-4 pr-6 text-[#737373]">{item.color}</td>
+                                        <td className="py-4 pr-6 text-[#737373]">{item.color || '-'}</td>
                                         {/* Qty */}
-                                        <td className="py-4 pr-6 text-[#2D3329]">× {item.qty}</td>
+                                        <td className="py-4 pr-6 text-[#2D3329]">× {item.quantity}</td>
                                         {/* Unit price */}
-                                        <td className="py-4 pr-6 text-[#2D3329]">{fmt(item.price)}</td>
+                                        <td className="py-4 pr-6 text-[#2D3329]">{fmt(item.price_at_purchase)}</td>
                                         {/* Line total */}
-                                        <td className="py-4 text-[#2D3329] font-medium">{fmt(item.price * item.qty)}</td>
+                                        <td className="py-4 text-[#2D3329] font-medium">{fmt(item.price_at_purchase * item.quantity)}</td>
                                     </tr>
                                 ))}
                             </tbody>

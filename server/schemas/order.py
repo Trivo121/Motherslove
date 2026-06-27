@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
+from schemas.product import ProductOut
 
 class OrderItemCreate(BaseModel):
     product_id: UUID
@@ -16,6 +17,7 @@ class OrderItemResponse(BaseModel):
     size: Optional[str]
     color: Optional[str]
     price_at_purchase: int
+    product: Optional[ProductOut] = None
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -39,6 +41,15 @@ class OrderResponse(BaseModel):
     total_amount: int
     status: str
     razorpay_order_id: Optional[str] = None
+    shipping_name: str
+    shipping_email: str
+    shipping_phone: str
+    shipping_flat: Optional[str] = None
+    shipping_street: Optional[str] = None
+    shipping_city: str
+    shipping_state: str
+    shipping_pincode: str
+    notes: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     items: List[OrderItemResponse] = []
@@ -52,3 +63,6 @@ class PaymentVerification(BaseModel):
     razorpay_signature: str
 
     model_config = ConfigDict(from_attributes=True)
+
+class OrderStatusUpdate(BaseModel):
+    status: str
