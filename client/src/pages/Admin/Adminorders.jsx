@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { STATUS_STEPS, STATUS_CONFIG } from './orderData';
+import { STATUS_STEPS, STATUS_CONFIG, STATUS_FLOW } from './orderData';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
@@ -76,7 +76,9 @@ function Tabs({ orders, active, onChange }) {
 }
 
 /* ---------- Desktop table row ---------- */
-function TableRow({ order, onClick }) {
+function TableRow({ order, onClick, onUpdateStatus }) {
+    const nextStatus = STATUS_FLOW[order.status];
+    
     return (
         <tr
             onClick={onClick}
@@ -95,15 +97,30 @@ function TableRow({ order, onClick }) {
             <td className="px-6 py-4 font-avenir text-sm text-[#2D3329] max-w-[180px] truncate">{itemSummary(order)}</td>
             <td className="px-6 py-4 font-avenir text-sm text-[#2D3329] whitespace-nowrap">{fmtAmount(orderTotal(order))}</td>
             <td className="px-6 py-4"><StatusBadge status={order.status} /></td>
-            <td className="px-6 py-4">
-                <ChevronIcon size={16} className="text-[#737373] group-hover:text-[#A96142] transition-colors" />
+            <td className="px-6 py-4 text-right">
+                <div className="flex items-center justify-end gap-3">
+                    {nextStatus && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onUpdateStatus(order.id, nextStatus);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 px-3 py-1.5 bg-[#2D3329] text-white text-xs font-avenir hover:bg-[#A96142] transition-all"
+                        >
+                            Mark {nextStatus}
+                        </button>
+                    )}
+                    <ChevronIcon size={16} className="text-[#737373] group-hover:text-[#A96142] transition-colors" />
+                </div>
             </td>
         </tr>
     );
 }
 
 /* ---------- Mobile card ---------- */
-function OrderCard({ order, onClick }) {
+function OrderCard({ order, onClick, onUpdateStatus }) {
+    const nextStatus = STATUS_FLOW[order.status];
+    
     return (
         <div
             onClick={onClick}
@@ -121,9 +138,22 @@ function OrderCard({ order, onClick }) {
                     <p className="font-avenir text-xs text-[#737373]">{itemSummary(order)}</p>
                     <p className="font-avenir text-xs text-[#737373] mt-0.5">{fmtDate(order.created_at)}</p>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex flex-col items-end gap-2">
                     <p className="font-poppins text-lg font-light text-[#2D3329]">{fmtAmount(orderTotal(order))}</p>
-                    <ChevronIcon size={16} className="text-[#737373] group-hover:text-[#A96142] transition-colors" />
+                    <div className="flex items-center gap-2">
+                        {nextStatus && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onUpdateStatus(order.id, nextStatus);
+                                }}
+                                className="px-3 py-1 bg-[#2D3329] text-white text-xs font-avenir hover:bg-[#A96142] transition-colors"
+                            >
+                                Mark {nextStatus}
+                            </button>
+                        )}
+                        <ChevronIcon size={16} className="text-[#737373] group-hover:text-[#A96142] transition-colors" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,6 +181,22 @@ export default function AdminOrders() {
         }
         fetchOrders();
     }, []);
+
+    async function handleUpdateStatus(orderId, nextStatus) {
+        try {
+            const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: nextStatus })
+            });
+            if (res.ok) {
+                const updatedOrder = await res.json();
+                setOrders(prev => prev.map(o => o.id === orderId ? updatedOrder : o));
+            }
+        } catch (err) {
+            console.error("Failed to update status:", err);
+        }
+    }
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
@@ -212,7 +258,7 @@ export default function AdminOrders() {
                         </thead>
                         <tbody>
                             {filtered.map((o) => (
-                                <TableRow key={o.id} order={o} onClick={() => goToOrder(o.id)} />
+                                <TableRow key={o.id} order={o} onClick={() => goToOrder(o.id)} onUpdateStatus={handleUpdateStatus} />
                             ))}
                         </tbody>
                     </table>
@@ -222,7 +268,7 @@ export default function AdminOrders() {
                 <div className="md:hidden divide-y divide-[#2D3329]/5">
                     {filtered.map((o) => (
                         <div key={o.id} className="p-3">
-                            <OrderCard order={o} onClick={() => goToOrder(o.id)} />
+                            <OrderCard order={o} onClick={() => goToOrder(o.id)} onUpdateStatus={handleUpdateStatus} />
                         </div>
                     ))}
                 </div>
