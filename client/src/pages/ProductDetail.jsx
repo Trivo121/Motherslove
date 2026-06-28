@@ -143,8 +143,8 @@ export default function ProductPage() {
         return <div className="min-h-screen bg-white flex items-center justify-center">Product not found</div>;
     }
 
-    const images = (product.image_urls && product.image_urls.length > 0)
-        ? [...product.image_urls, ...Array(4 - product.image_urls.length).fill(null)].slice(0, 4)
+    const images = product.images?.length
+        ? product.images
         : [product.img, null, null, null];
 
     const currentIndex = allProducts.findIndex(p => p.id === product.id);
@@ -320,8 +320,6 @@ export default function ProductPage() {
                             <ul className="space-y-1 list-none">
                                 <li>Standard delivery: 5–7 business days</li>
                                 <li>Express delivery: 2–3 business days</li>
-                                <li>Free delivery on orders over ₹1,500</li>
-                                <li>All orders ship from Chennai, Tamil Nadu</li>
                             </ul>
                         </Accordion>
                     </div>
