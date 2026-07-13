@@ -41,10 +41,10 @@ export default function Navbar({ cartCount = 0 }) {
     };
 
     return (
-        <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white sticky top-0 z-40 border-b border-[#2D3329]/5">
+        <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-[#A96142] sticky top-0 z-40 shadow-md">
             <div className="flex items-center gap-6">
                 <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
-                <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
+                <div className="hidden md:flex items-center gap-6 text-white text-sm font-avenir font-light">
                     {navLinks.map((link, i) => {
                         const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
                         return (
@@ -52,7 +52,7 @@ export default function Navbar({ cartCount = 0 }) {
                                 key={i} 
                                 onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} 
                                 href="#" 
-                                className={`cursor-pointer hover:text-[#A96142] transition-colors`}
+                                className={`cursor-pointer hover:text-white/80 transition-colors`}
                             >
                                 {link}
                             </a>
@@ -61,17 +61,17 @@ export default function Navbar({ cartCount = 0 }) {
                 </div>
             </div>
 
-            <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
+            <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-white text-center hover:text-white/80 transition-colors">
                 MOTHER'S LOVE
             </button>
 
-            <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
-                <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
+            <div className="flex items-center gap-6 justify-end text-white text-sm font-avenir font-light relative">
+                <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-white/80 transition-colors">
                     {user ? `Hi, ${displayName}` : 'Account'}
                     <ChevronIcon size={14} className={`transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {accountOpen && (
-                    <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
+                    <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50 text-[#2D3329]">
                         {user ? (
                             <>
                                 <div className="px-4 py-2 border-b border-[#2D3329]/10 text-[#737373] text-xs break-all mb-1">
@@ -91,10 +91,10 @@ export default function Navbar({ cartCount = 0 }) {
                         )}
                     </div>
                 )}
-                <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
+                <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-white/80 transition-colors">
                     <BagIcon size={20} />
                     {cartCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+                        <span className="absolute -top-2 -right-2 bg-white text-[#A96142] font-semibold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
                     )}
                 </button>
             </div>

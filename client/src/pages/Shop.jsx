@@ -150,6 +150,8 @@ export default function AllProductsPage() {
             ]
         },
         { key: 'shirts', label: 'Shirts' },
+        { key: 'pants', label: 'Pants' },
+        { key: 'caps', label: 'Caps' },
         { key: 'hoodies', label: 'Hoodies' },
         { key: 'sweatshirts', label: 'Sweatshirts' },
     ];

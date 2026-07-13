@@ -391,6 +391,8 @@ export default function AdminProductForm() {
                                     <option value="unique">T-Shirts - Unique</option>
                                     <option value="formal">T-Shirts - Formal</option>
                                     <option value="shirts">Shirts</option>
+                                    <option value="pants">Pants</option>
+                                    <option value="caps">Caps</option>
                                     <option value="hoodies">Hoodies</option>
                                     <option value="sweatshirts">Sweatshirts</option>
                                 </select>
