@@ -154,9 +154,14 @@ function ProductCard({ product, onEdit, onDelete }) {
             {/* Info */}
             <div className="p-4 flex flex-col gap-3 flex-1">
                 <div>
-                    <p className="font-avenir text-[10px] text-[#737373] uppercase tracking-wider mb-0.5">
-                        {product.id}
-                    </p>
+                    <div className="flex items-center justify-between mb-0.5">
+                        <p className="font-avenir text-[10px] text-[#737373] uppercase tracking-wider truncate mr-2">
+                            {product.id}
+                        </p>
+                        <p className="font-avenir text-[10px] text-[#A96142] uppercase tracking-wider font-semibold whitespace-nowrap">
+                            {product.category || 'Uncategorized'}
+                        </p>
+                    </div>
                     <h3 className="font-poppins text-base font-light text-[#2D3329] leading-snug">
                         {product.name}
                     </h3>

@@ -388,8 +388,11 @@ export default function AdminProductForm() {
                                     onChange={(e) => set('category', e.target.value)}
                                     className="w-full px-4 py-2.5 border border-[#2D3329]/20 font-avenir text-sm text-[#2D3329] focus:outline-none focus:border-[#A96142] transition-colors bg-white appearance-none"
                                 >
-                                    <option value="unique">Unique Prints</option>
-                                    <option value="official">Official Prints</option>
+                                    <option value="unique">T-Shirts - Unique</option>
+                                    <option value="formal">T-Shirts - Formal</option>
+                                    <option value="shirts">Shirts</option>
+                                    <option value="hoodies">Hoodies</option>
+                                    <option value="sweatshirts">Sweatshirts</option>
                                 </select>
                                 <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] pointer-events-none">
                                     <path d="M6 9l6 6 6-6" />

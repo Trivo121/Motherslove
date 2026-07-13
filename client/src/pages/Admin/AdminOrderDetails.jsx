@@ -356,7 +356,7 @@ export default function AdminOrderDetail() {
                         <table className="w-full font-avenir text-sm">
                             <thead>
                                 <tr className="border-b border-[#2D3329]/8">
-                                    {['Product', 'Size', 'Colour', 'Qty', 'Unit Price', 'Line Total'].map((h) => (
+                                    {['Product', 'Category', 'Size', 'Colour', 'Qty', 'Unit Price', 'Line Total'].map((h) => (
                                         <th key={h} className="pb-3 text-left font-light text-xs text-[#737373] uppercase tracking-wider pr-6 whitespace-nowrap">
                                             {h}
                                         </th>
@@ -378,6 +378,10 @@ export default function AdminOrderDetail() {
                                                 </div>
                                                 <p className="text-[#2D3329]">{item.product ? item.product.name : 'Unknown Product'}</p>
                                             </div>
+                                        </td>
+                                        {/* Category */}
+                                        <td className="py-4 pr-6">
+                                            <p className="text-[#737373] capitalize">{item.product?.category || 'Uncategorized'}</p>
                                         </td>
                                         {/* Size */}
                                         <td className="py-4 pr-6">

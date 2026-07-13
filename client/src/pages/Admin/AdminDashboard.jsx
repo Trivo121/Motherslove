@@ -174,7 +174,7 @@ export default function AdminDashboard() {
                     }));
                     setLowStock(data.filter(p => p.stock < 5).map(p => ({
                         name: p.name,
-                        color: p.category || 'Standard',
+                        category: p.category || 'Uncategorized',
                         stock: p.stock
                     })));
                 }
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
                                 <div key={item.name} className="flex items-center justify-between p-3 bg-amber-50 border border-amber-100">
                                     <div>
                                         <p className="font-avenir text-sm text-[#2D3329]">{item.name}</p>
-                                        <p className="font-avenir text-xs text-[#737373]">{item.color}</p>
+                                        <p className="font-avenir text-xs text-[#737373] capitalize">{item.category}</p>
                                     </div>
                                     <span className="font-poppins text-lg font-light text-amber-600">{item.stock}</span>
                                 </div>

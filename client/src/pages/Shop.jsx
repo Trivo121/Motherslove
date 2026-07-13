@@ -23,16 +23,45 @@ const Icon = ({ children, size = 20, className = '' }) => (
 
 
 /* ---------- Filter bar ---------- */
-function FilterPill({ label, active, onClick }) {
+function FilterPill({ item, activeFilter, onSelect }) {
+    if (item.subItems) {
+        const isActive = item.subItems.some(sub => sub.key === activeFilter);
+        return (
+            <div className="relative group">
+                <button
+                    className={`flex items-center gap-2 px-6 py-3 border font-avenir text-sm tracking-wide transition-colors ${isActive
+                        ? 'bg-[#A96142] border-[#A96142] text-white'
+                        : 'bg-white border-[#2D3329]/25 text-[#2D3329] group-hover:border-[#A96142] group-hover:text-[#A96142]'
+                        }`}
+                >
+                    {item.label}
+                    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="ml-1 opacity-60"><path d="M6 9l6 6 6-6" /></svg>
+                </button>
+                <div className="absolute left-0 top-full w-48 bg-white border border-[#2D3329]/15 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 flex flex-col">
+                    {item.subItems.map(sub => (
+                        <button
+                            key={sub.key}
+                            onClick={() => onSelect(sub.key)}
+                            className={`text-left px-4 py-3 text-sm font-avenir hover:bg-[#FDF6F3] transition-colors ${activeFilter === sub.key ? 'text-[#A96142] font-semibold' : 'text-[#2D3329]'}`}
+                        >
+                            {sub.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    const active = activeFilter === item.key;
     return (
         <button
-            onClick={onClick}
+            onClick={() => onSelect(item.key)}
             className={`flex items-center gap-2 px-6 py-3 border font-avenir text-sm tracking-wide transition-colors ${active
                 ? 'bg-[#A96142] border-[#A96142] text-white'
                 : 'bg-white border-[#2D3329]/25 text-[#2D3329] hover:border-[#A96142] hover:text-[#A96142]'
                 }`}
         >
-            {label}
+            {item.label}
         </button>
     );
 }
@@ -112,8 +141,17 @@ export default function AllProductsPage() {
 
     const filters = [
         { key: 'all', label: 'All Products' },
-        { key: 'unique', label: 'Unique' },
-        { key: 'official', label: 'Official' },
+        {
+            key: 'tshirts',
+            label: 'T-Shirts',
+            subItems: [
+                { key: 'unique', label: 'Unique' },
+                { key: 'formal', label: 'Formal' }
+            ]
+        },
+        { key: 'shirts', label: 'Shirts' },
+        { key: 'hoodies', label: 'Hoodies' },
+        { key: 'sweatshirts', label: 'Sweatshirts' },
     ];
 
     const visibleProducts =
@@ -130,7 +168,7 @@ export default function AllProductsPage() {
 
             <div className="flex flex-wrap items-center justify-center gap-3 px-6 md:px-10 pb-12">
                 {filters.map((f) => (
-                    <FilterPill key={f.key} label={f.label} active={activeFilter === f.key} onClick={() => setActiveFilter(f.key)} />
+                    <FilterPill key={f.key} item={f} activeFilter={activeFilter} onSelect={setActiveFilter} />
                 ))}
             </div>
 

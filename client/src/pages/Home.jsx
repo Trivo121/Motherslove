@@ -84,9 +84,9 @@ const HomePage = () => {
             target: 'unique',
         },
         {
-            label: 'Shop Official Prints',
+            label: 'Shop Formal Prints',
             img: formalCover,
-            target: 'official',
+            target: 'formal',
         },
     ];
 
@@ -234,7 +234,7 @@ const HomePage = () => {
                         <h4 className="font-avenir text-xs tracking-widest uppercase mb-4 text-[#FDF6F3]/60">Shop</h4>
                         <ul className="space-y-2 font-avenir font-light text-sm">
                             <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Unique Prints</button></li>
-                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Official Prints</button></li>
+                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">Formal Prints</button></li>
                             <li><button onClick={() => navigate('/shop')} className="hover:text-[#A96142] cursor-pointer">New Arrivals</button></li>
                         </ul>
                     </div>
