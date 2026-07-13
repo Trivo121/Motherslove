@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session, joinedload
 from uuid import UUID
 from typing import List
@@ -123,9 +123,10 @@ def checkout_cart(order_data: OrderCreate, db: Session = Depends(get_db)):
 
 
 from schemas.order import PaymentVerification
+from core.email_utils import send_order_confirmation_email, send_order_status_email
 
 @router.post("/verify-payment", status_code=status.HTTP_200_OK)
-def verify_payment(payload: PaymentVerification, db: Session = Depends(get_db)):
+def verify_payment(payload: PaymentVerification, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """
     Verifies the Razorpay payment signature and updates the order status.
     """
@@ -164,6 +165,9 @@ def verify_payment(payload: PaymentVerification, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(order)
 
+    # Queue confirmation email
+    background_tasks.add_task(send_order_confirmation_email, order)
+
     return {"status": "success", "message": "Payment verified successfully", "order_id": order.id}
 
 
@@ -194,7 +198,7 @@ def get_order_by_id(order_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.put("/{order_id}/status", response_model=OrderResponse)
-def update_order_status(order_id: UUID, status_update: OrderStatusUpdate, db: Session = Depends(get_db)):
+def update_order_status(order_id: UUID, status_update: OrderStatusUpdate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """
     Update the status of a specific order.
     """
@@ -214,5 +218,8 @@ def update_order_status(order_id: UUID, status_update: OrderStatusUpdate, db: Se
     order = db.query(Order).options(
         joinedload(Order.items).joinedload(OrderItem.product)
     ).filter(Order.id == order_id).first()
+    
+    # Queue status update email
+    background_tasks.add_task(send_order_status_email, order)
     
     return order
