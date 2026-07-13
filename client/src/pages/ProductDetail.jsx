@@ -143,8 +143,8 @@ export default function ProductPage() {
         return <div className="min-h-screen bg-white flex items-center justify-center">Product not found</div>;
     }
 
-    const images = product.images?.length
-        ? product.images
+    const images = product.image_urls?.length
+        ? [...product.image_urls, null, null, null].slice(0, 4)
         : [product.img, null, null, null];
 
     const currentIndex = allProducts.findIndex(p => p.id === product.id);
