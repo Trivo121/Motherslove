@@ -98,6 +98,26 @@ export default function ProductPage() {
     const [activeImgIndex, setActiveImgIndex] = useState(0);
     const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
+    const [chatOpen, setChatOpen] = useState(false);
+    const [chatMessage, setChatMessage] = useState('');
+    const [messages, setMessages] = useState([
+        { sender: 'bot', text: 'Hi! Let us know if you have any questions about our sustainable collections.' }
+    ]);
+
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        if (!chatMessage.trim()) return;
+        const userMsg = { sender: 'user', text: chatMessage };
+        setMessages(prev => [...prev, userMsg]);
+        setChatMessage('');
+        setTimeout(() => {
+            setMessages(prev => [...prev, {
+                sender: 'bot',
+                text: "Thanks for checking in! Our customer love team will text you back within 5 minutes."
+            }]);
+        }, 1000);
+    };
+
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
@@ -109,6 +129,7 @@ export default function ProductPage() {
                         ...p,
                         img: p.image_url,
                         priceFormatted: `₹${p.price.toLocaleString('en-IN')}.00`,
+                        salePriceFormatted: p.sale_price ? `₹${p.sale_price.toLocaleString('en-IN')}.00` : null,
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
                         color: p.category || 'Standard'
                     }));
@@ -257,7 +278,16 @@ export default function ProductPage() {
                         {product.name}
                     </h1>
                     <p className="font-avenir text-sm text-[#737373] mt-2">{product.sku}</p>
-                    <p className="font-avenir text-xl text-[#A96142] mt-5">{product.priceFormatted || product.price}</p>
+                    <p className="font-avenir text-xl text-[#A96142] mt-5">
+                        {product.on_sale && product.salePriceFormatted ? (
+                            <>
+                                <span className="line-through text-[#737373] mr-3 text-lg">{product.priceFormatted || product.price}</span>
+                                <span>{product.salePriceFormatted}</span>
+                            </>
+                        ) : (
+                            product.priceFormatted || product.price
+                        )}
+                    </p>
 
                     <div className="mt-7">
                         <SizePicker
@@ -298,11 +328,14 @@ export default function ProductPage() {
                         )}
                         <button
                             onClick={handleAddToCart}
-                            className="w-full border border-[#A96142] text-[#A96142] font-avenir py-3 hover:bg-[#A96142] hover:text-white transition-colors"
+                            className="w-full border border-[#A96142] text-[#A96142] font-avenir py-3 hover:bg-[#A96142] hover:text-white transition-colors uppercase tracking-widest text-xs font-semibold duration-300"
                         >
                             Add to Cart
                         </button>
-                        <button onClick={() => { addToCart(product, selectedSize, qty, product.color || 'Standard'); routerNavigate('/checkout'); }} className="w-full bg-[#2D3329] text-white font-avenir py-3 hover:bg-[#3f4a39] transition-colors">
+                        <button 
+                            onClick={() => { addToCart(product, selectedSize, qty, product.color || 'Standard'); routerNavigate('/checkout'); }} 
+                            className="w-full bg-[#A96142] text-white border border-[#A96142] font-avenir py-3 hover:bg-white hover:text-[#A96142] transition-colors uppercase tracking-widest text-xs font-semibold duration-300"
+                        >
                             Buy Now
                         </button>
                     </div>
@@ -327,45 +360,91 @@ export default function ProductPage() {
             </div>
 
             {/* You may also like */}
-            <section className="bg-[#FDF6F3] px-6 md:px-10 py-16">
+            <section className="bg-white px-6 md:px-10 py-16 border-t border-[#FDF6F3]">
                 <h2 className="font-poppins text-2xl font-light text-[#2D3329] text-center mb-10">You May Also Like</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                    {allProducts.filter((p) => p.id !== product.id).slice(0, 4).map((p) => (
-                        <button
-                            key={p.id}
-                            onClick={() => goToProduct(p.id)}
-                            className="group text-left"
-                        >
-                            <div className="aspect-[3/4] overflow-hidden bg-white">
-                                <img
-                                    src={p.img}
-                                    alt={p.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
-                            </div>
-                            <p className="mt-3 font-avenir text-[#2D3329] text-sm">{p.name}</p>
-                            <p className="font-avenir text-[#A96142] text-sm">{p.priceFormatted || p.price}</p>
-                        </button>
-                    ))}
+                    {allProducts.filter((p) => p.id !== product.id).slice(0, 4).map((p, idx) => {
+                        const backgrounds = ['bg-[#E3DDD6]', 'bg-[#D5D0C8]', 'bg-[#CDD6CE]', 'bg-[#D9D5C9]'];
+                        const cardBg = backgrounds[idx % backgrounds.length];
+                        return (
+                            <button
+                                key={p.id}
+                                onClick={() => goToProduct(p.id)}
+                                className="group text-left"
+                            >
+                                <div className={`aspect-[3/4] overflow-hidden ${cardBg} transition-transform duration-300 hover:shadow-sm`}>
+                                    <img
+                                        src={p.img}
+                                        alt={p.name}
+                                        className="w-full h-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-100"
+                                    />
+                                </div>
+                                <p className="mt-3 font-avenir text-[#2D3329] text-sm group-hover:text-[#A96142] transition-colors">{p.name}</p>
+                                <p className="font-avenir text-[#A96142] text-sm mt-1">{p.priceFormatted || p.price}</p>
+                            </button>
+                        );
+                    })}
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="bg-[#2D3329] text-white px-6 md:px-10 py-10">
+            <footer className="bg-[#2D3329] text-[#737373] px-6 md:px-10 py-16 border-t border-white/5">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-avenir">
-                    <span className="tracking-widest">MOTHER'S LOVE</span>
-                    <span className="text-white/60">© 2026 Mother's Love. All rights reserved.</span>
+                    <span className="tracking-widest text-white font-semibold font-cinzel">MOTHER'S LOVE</span>
+                    <span className="text-[#737373]/60">© 2026 Mother's Love. All rights reserved.</span>
                 </div>
             </footer>
 
-            {/* Chat widget */}
-            <button
-                aria-label="Open chat"
-                className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#A96142] text-white px-5 py-3 rounded-full shadow-lg hover:bg-[#8f5237] transition-colors"
-            >
-                <ChatIcon size={18} />
-                <span className="font-avenir text-sm">Let's Chat!</span>
-            </button>
+            {/* Chat Widget Button & Dialog */}
+            <div className="fixed bottom-6 right-6 z-50">
+                {!chatOpen ? (
+                    <button 
+                        onClick={() => setChatOpen(true)}
+                        className="w-14 h-14 bg-[#A96142] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-300 border border-[#A96142]"
+                        aria-label="Open chat"
+                    >
+                        <svg viewBox="0 0 24 24" width={24} height={24} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </button>
+                ) : (
+                    <div className="w-80 h-96 bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden border border-[#2D3329]/10">
+                        {/* Chat Header */}
+                        <div className="bg-[#A96142] text-white px-4 py-3 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                                <span className="font-avenir text-sm font-semibold tracking-wide">Support Chat</span>
+                            </div>
+                            <button onClick={() => setChatOpen(false)} className="text-white/80 hover:text-white">
+                                <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
+                        </div>
+                        {/* Chat Messages */}
+                        <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3 bg-[#FDF6F3]/30">
+                            {messages.map((msg, i) => (
+                                <div key={i} className={`max-w-[80%] p-2.5 rounded-lg text-xs font-avenir ${msg.sender === 'bot' ? 'bg-white text-[#2D3329] self-start shadow-sm border border-[#2D3329]/5' : 'bg-[#A96142] text-white self-end shadow-sm'}`}>
+                                    {msg.text}
+                                </div>
+                            ))}
+                        </div>
+                        {/* Chat Input */}
+                        <form onSubmit={handleSendMessage} className="p-3 border-t border-[#2D3329]/10 flex gap-2 bg-white">
+                            <input
+                                type="text"
+                                value={chatMessage}
+                                onChange={(e) => setChatMessage(e.target.value)}
+                                placeholder="Write a message..."
+                                className="flex-grow border border-[#2D3329]/10 rounded px-3 py-1.5 text-xs font-avenir focus:outline-none focus:border-[#A96142]"
+                            />
+                            <button type="submit" className="bg-[#A96142] text-white px-3 py-1.5 rounded text-xs font-avenir hover:bg-[#8f5237] transition-colors">
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

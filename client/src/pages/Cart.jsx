@@ -33,7 +33,7 @@ export default function CartPage() {
     const total = subtotal + shipping;
 
     return (
-        <div className="min-h-screen bg-[#F8F7F5] font-avenir flex flex-col">
+        <div className="min-h-screen bg-white font-avenir flex flex-col">
             <Navbar cartCount={cartItems.reduce((acc, item) => acc + item.qty, 0)} />
             <div className="flex-1 max-w-6xl mx-auto w-full px-6 py-16">
                 <div className="flex items-center justify-between mb-10">
@@ -85,8 +85,8 @@ export default function CartPage() {
                             </tbody>
                         </table>
                     </div>
-                    <div className="bg-white border border-[#2D3329]/8 p-8 self-start">
-                        <h2 className="font-avenir uppercase tracking-widest text-[#2D3329] text-sm mb-6">Order Summary</h2>
+                    <div className="bg-[#FDF6F3] border border-[#FDF6F3] p-8 self-start">
+                        <h2 className="font-avenir uppercase tracking-widest text-[#2D3329] text-sm mb-6 font-semibold">Order Summary</h2>
                         <div className="flex justify-between text-[#737373] text-sm mb-4">
                             <span>Subtotal</span>
                             <span>₹{subtotal.toLocaleString('en-IN')}</span>
@@ -97,19 +97,23 @@ export default function CartPage() {
                         </div>
                         <div className="flex justify-between text-[#2D3329] text-lg mb-8">
                             <span>Total</span>
-                            <span className="font-poppins text-[#A96142]">₹{total.toLocaleString('en-IN')}</span>
+                            <span className="font-poppins text-[#A96142] font-semibold">₹{total.toLocaleString('en-IN')}</span>
                         </div>
-                        <button onClick={() => navigate('/checkout')} className="w-full bg-[#A96142] text-white font-avenir py-4 text-sm hover:bg-[#8f5237] transition-colors uppercase tracking-widest disabled:opacity-50" disabled={cartItems.length === 0}>
+                        <button 
+                            onClick={() => navigate('/checkout')} 
+                            className="w-full bg-[#A96142] text-white border border-[#A96142] font-avenir py-4 text-sm hover:bg-white hover:text-[#A96142] transition-colors duration-300 uppercase tracking-widest disabled:opacity-50" 
+                            disabled={cartItems.length === 0}
+                        >
                             Proceed to Checkout
                         </button>
                     </div>
                 </div>
             </div>
 
-            <footer className="bg-[#2D3329] text-white px-6 md:px-10 py-10 mt-auto">
+            <footer className="bg-[#2D3329] text-[#737373] px-6 md:px-10 py-16 border-t border-white/5 mt-auto">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-avenir">
-                    <span className="tracking-widest">MOTHER'S LOVE</span>
-                    <span className="text-white/60">© 2026 Mother's Love. All rights reserved.</span>
+                    <span className="tracking-widest text-white font-cinzel">MOTHER'S LOVE</span>
+                    <span className="text-[#737373]/60">© 2026 Mother's Love. All rights reserved.</span>
                 </div>
             </footer>
         </div>

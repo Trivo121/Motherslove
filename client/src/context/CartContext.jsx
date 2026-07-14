@@ -37,9 +37,11 @@ export function CartProvider({ children }) {
                 item => item.id === product.id && item.size === size && item.color === color
             );
 
-            // Ensure we extract a clean numeric price
+            // Ensure we extract a clean numeric price, favoring sale_price if on sale
             let priceNum = 0;
-            if (typeof product.price === 'string') {
+            if (product.on_sale && product.sale_price != null) {
+                priceNum = Number(product.sale_price) || 0;
+            } else if (typeof product.price === 'string') {
                 priceNum = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
             } else {
                 priceNum = product.price || 0;

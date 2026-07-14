@@ -126,7 +126,7 @@ export default function AdminProductForm() {
     const EMPTY_FORM = {
         name: '', price: '', description: '',
         sizes: [], imagePreviews: [null, null, null, null],
-        published: true, tags: [], stock: '',
+        published: true, onSale: false, salePrice: '', tags: [], stock: '',
         category: 'unique',
     };
 
@@ -159,6 +159,8 @@ export default function AdminProductForm() {
                         [...product.image_urls, ...Array(4 - product.image_urls.length).fill(null)].slice(0, 4) : 
                         [product.image_url || null, null, null, null],
                     published: product.published,
+                    onSale: product.on_sale || false,
+                    salePrice: product.sale_price ? String(product.sale_price) : '',
                     tags: product.tags || [],
                     stock: String(product.stock),
                     category: product.category || 'unique',
@@ -266,6 +268,8 @@ export default function AdminProductForm() {
                 stock: Number(form.stock || 0),
                 category: form.category,
                 published: form.published,
+                on_sale: form.onSale,
+                sale_price: form.onSale && form.salePrice ? Number(form.salePrice) : null,
                 image_url: validImageUrls.length > 0 ? validImageUrls[0] : null,
                 image_urls: validImageUrls,
                 sizes: form.sizes,
@@ -371,6 +375,26 @@ export default function AdminProductForm() {
                                 min="0"
                                 hasError={!!errors.price}
                             />
+                            
+                            <label className="flex items-center gap-2 mt-4 cursor-pointer group w-max">
+                                <div className={`w-5 h-5 border flex items-center justify-center transition-colors ${form.onSale ? 'bg-[#A96142] border-[#A96142]' : 'border-[#2D3329]/30 group-hover:border-[#A96142]'}`}>
+                                    {form.onSale && <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>}
+                                </div>
+                                <span className="font-avenir text-sm text-[#2D3329]">Include it for sale</span>
+                                <input type="checkbox" checked={form.onSale} onChange={(e) => set('onSale', e.target.checked)} className="hidden"/>
+                            </label>
+                            
+                            {form.onSale && (
+                                <div className="mt-3">
+                                    <TextInput
+                                        type="number"
+                                        value={form.salePrice}
+                                        onChange={(e) => set('salePrice', e.target.value)}
+                                        placeholder="Sale Price (e.g. 399)"
+                                        min="0"
+                                    />
+                                </div>
+                            )}
                         </Field>
                         <Field label="Stock Count" hint="Leave blank if not tracking.">
                             <TextInput

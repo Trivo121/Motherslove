@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { STATUS_STEPS, STATUS_FLOW, STATUS_CONFIG } from './orderData';
-
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
-
 /* ---------- Icons ---------- */
 const I = ({ children, size = 18, className = '' }) => (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor"
@@ -43,7 +41,6 @@ function StatusBadge({ status, large }) {
         </span>
     );
 }
-
 /* ---------- Status timeline ---------- */
 function StatusTimeline({ currentStatus }) {
     const currentIdx = STATUS_STEPS.indexOf(currentStatus);
@@ -58,15 +55,15 @@ function StatusTimeline({ currentStatus }) {
                             <div className="flex flex-col items-center flex-shrink-0 w-24">
                                 {/* Circle */}
                                 <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${done ? 'bg-[#A96142] border-[#A96142]' :
-                                        current ? 'bg-white border-[#A96142]' :
-                                            'bg-white border-[#2D3329]/20'
+                                    current ? 'bg-white border-[#A96142]' :
+                                        'bg-white border-[#2D3329]/20'
                                     }`}>
                                     {done && <CheckIcon size={12} className="text-white" />}
                                     {current && <div className="w-2.5 h-2.5 rounded-full bg-[#A96142]" />}
                                 </div>
                                 {/* Label */}
                                 <p className={`font-avenir text-[11px] text-center mt-2 leading-tight ${current ? 'text-[#A96142] font-medium' :
-                                        done ? 'text-[#2D3329]' : 'text-[#737373]'
+                                    done ? 'text-[#2D3329]' : 'text-[#737373]'
                                     }`}>{step}</p>
                             </div>
                             {/* Connector */}
@@ -80,7 +77,6 @@ function StatusTimeline({ currentStatus }) {
         </div>
     );
 }
-
 /* ---------- Confirmation modal ---------- */
 function ConfirmModal({ nextStatus, orderId, onConfirm, onCancel }) {
     return (
@@ -113,7 +109,6 @@ function ConfirmModal({ nextStatus, orderId, onConfirm, onCancel }) {
         </div>
     );
 }
-
 /* ---------- Success toast ---------- */
 function Toast({ message, onDone }) {
     useEffect(() => {
@@ -129,7 +124,6 @@ function Toast({ message, onDone }) {
         </div>
     );
 }
-
 /* ---------- Info row (customer detail) ---------- */
 function InfoRow({ icon: Icon, label, value }) {
     return (
@@ -142,7 +136,6 @@ function InfoRow({ icon: Icon, label, value }) {
         </div>
     );
 }
-
 /* ---------- Section card ---------- */
 function Card({ title, children }) {
     return (
@@ -154,7 +147,6 @@ function Card({ title, children }) {
         </div>
     );
 }
-
 /* ---------- Page ---------- */
 export default function AdminOrderDetail() {
     const { orderId } = useParams();
@@ -224,7 +216,7 @@ export default function AdminOrderDetail() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: nextStatus })
             });
-            
+
             if (res.ok) {
                 const updatedOrder = await res.json();
                 setOrder(updatedOrder);
@@ -356,7 +348,7 @@ export default function AdminOrderDetail() {
                         <table className="w-full font-avenir text-sm">
                             <thead>
                                 <tr className="border-b border-[#2D3329]/8">
-                                    {['Product', 'Category', 'Size', 'Colour', 'Qty', 'Unit Price', 'Line Total'].map((h) => (
+                                    {['Product', 'Size', 'Colour', 'Qty', 'Unit Price', 'Line Total'].map((h) => (
                                         <th key={h} className="pb-3 text-left font-light text-xs text-[#737373] uppercase tracking-wider pr-6 whitespace-nowrap">
                                             {h}
                                         </th>
@@ -378,10 +370,6 @@ export default function AdminOrderDetail() {
                                                 </div>
                                                 <p className="text-[#2D3329]">{item.product ? item.product.name : 'Unknown Product'}</p>
                                             </div>
-                                        </td>
-                                        {/* Category */}
-                                        <td className="py-4 pr-6">
-                                            <p className="text-[#737373] capitalize">{item.product?.category || 'Uncategorized'}</p>
                                         </td>
                                         {/* Size */}
                                         <td className="py-4 pr-6">

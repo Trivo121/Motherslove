@@ -11,6 +11,8 @@ class ProductBase(BaseModel):
     category: Optional[str] = None
     stock: int = 0
     published: bool = False
+    on_sale: bool = False
+    sale_price: Optional[int] = None
     sizes: List[str] = []
     tags: List[str] = []
 
@@ -26,6 +28,8 @@ class ProductUpdate(BaseModel):
     category: Optional[str] = None
     stock: Optional[int] = None
     published: Optional[bool] = None
+    on_sale: Optional[bool] = None
+    sale_price: Optional[int] = None
     image_url: Optional[str] = None
     image_urls: Optional[List[str]] = None
     sizes: Optional[List[str]] = None

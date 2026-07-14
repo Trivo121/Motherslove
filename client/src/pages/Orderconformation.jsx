@@ -101,7 +101,7 @@ export default function OrderConfirmation() {
     const firstName = order.customer.name.split(' ')[0];
 
     return (
-        <div className="min-h-screen bg-[#F8F7F5] font-avenir flex flex-col">
+        <div className="min-h-screen bg-white font-avenir flex flex-col">
 
             <style>{`
                 @keyframes popIn {
@@ -341,7 +341,7 @@ export default function OrderConfirmation() {
                 <div className={`mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 transition-all duration-700 delay-700 ${visible ? 'opacity-100' : 'opacity-0'}`}>
                     <button
                         onClick={() => navigate('/shop')}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-[#A96142] text-white font-avenir text-sm hover:bg-[#8f5237] transition-colors"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-[#A96142] text-white border border-[#A96142] font-avenir text-sm hover:bg-white hover:text-[#A96142] transition-colors duration-300 uppercase tracking-widest text-xs font-semibold"
                     >
                         <BagIcon size={16} />
                         Continue Shopping
@@ -372,10 +372,10 @@ export default function OrderConfirmation() {
             </div>
 
             {/* Footer */}
-            <footer className="bg-[#2D3329] text-white px-6 md:px-10 py-10 mt-8 no-print">
+            <footer className="bg-[#2D3329] text-[#737373] px-6 md:px-10 py-16 border-t border-white/5 mt-8 no-print">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-avenir">
-                    <span className="tracking-widest">MOTHER'S LOVE</span>
-                    <span className="text-white/60">© 2026 Mother's Love. All rights reserved.</span>
+                    <span className="tracking-widest text-white font-semibold font-cinzel">MOTHER'S LOVE</span>
+                    <span className="text-[#737373]/60">© 2026 Mother's Love. All rights reserved.</span>
                 </div>
             </footer>
         </div>

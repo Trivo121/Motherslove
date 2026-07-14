@@ -141,6 +141,25 @@ export default function UserProfile() {
     const navigate = useNavigate();
     const { user, profile: authProfile, signOut } = useAuth();
 
+    const [chatOpen, setChatOpen] = useState(false);
+    const [chatMessage, setChatMessage] = useState('');
+    const [messages, setMessages] = useState([
+        { sender: 'bot', text: 'Hi! Let us know if you have any questions about our sustainable collections.' }
+    ]);
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        if (!chatMessage.trim()) return;
+        const userMsg = { sender: 'user', text: chatMessage };
+        setMessages(prev => [...prev, userMsg]);
+        setChatMessage('');
+        setTimeout(() => {
+            setMessages(prev => [...prev, {
+                sender: 'bot',
+                text: "Thanks for checking in! Our customer love team will text you back within 5 minutes."
+            }]);
+        }, 1000);
+    };
+
     /* ─── Tab state ─── */
     const [activeTab, setActiveTab] = useState('profile');
     const [loadingData, setLoadingData] = useState(true);
@@ -318,7 +337,7 @@ export default function UserProfile() {
 
     /* ─── Render ─── */
     return (
-        <div className="min-h-screen bg-[#F8F7F5] font-avenir flex flex-col">
+        <div className="min-h-screen bg-white font-avenir flex flex-col">
             <Navbar />
 
             {/* ── Profile header (white strip with avatar + tabs) ── */}
@@ -767,21 +786,63 @@ export default function UserProfile() {
             </div>
 
             {/* Footer */}
-            <footer className="bg-[#2D3329] text-white px-6 md:px-10 py-10 mt-auto">
+            <footer className="bg-[#2D3329] text-[#737373] px-6 md:px-10 py-16 border-t border-white/5 mt-auto">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-avenir">
-                    <span className="tracking-widest">MOTHER'S LOVE</span>
-                    <span className="text-white/60">© 2026 Mother's Love. All rights reserved.</span>
+                    <span className="tracking-widest text-white font-semibold font-cinzel">MOTHER'S LOVE</span>
+                    <span className="text-[#737373]/60">© 2026 Mother's Love. All rights reserved.</span>
                 </div>
             </footer>
 
-            {/* Chat widget */}
-            <button
-                aria-label="Open chat"
-                className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#A96142] text-white px-5 py-3 rounded-full shadow-lg hover:bg-[#8f5237] transition-colors"
-            >
-                <ChatIcon size={18} />
-                <span className="font-avenir text-sm">Let's Chat!</span>
-            </button>
+            {/* Chat Widget Button & Dialog */}
+            <div className="fixed bottom-6 right-6 z-50">
+                {!chatOpen ? (
+                    <button 
+                        onClick={() => setChatOpen(true)}
+                        className="w-14 h-14 bg-[#A96142] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-300 border border-[#A96142]"
+                        aria-label="Open chat"
+                    >
+                        <svg viewBox="0 0 24 24" width={24} height={24} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </button>
+                ) : (
+                    <div className="w-80 h-96 bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden border border-[#2D3329]/10">
+                        {/* Chat Header */}
+                        <div className="bg-[#A96142] text-white px-4 py-3 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                                <span className="font-avenir text-sm font-semibold tracking-wide">Support Chat</span>
+                            </div>
+                            <button onClick={() => setChatOpen(false)} className="text-white/80 hover:text-white">
+                                <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
+                        </div>
+                        {/* Chat Messages */}
+                        <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3 bg-[#FDF6F3]/30">
+                            {messages.map((msg, i) => (
+                                <div key={i} className={`max-w-[80%] p-2.5 rounded-lg text-xs font-avenir ${msg.sender === 'bot' ? 'bg-white text-[#2D3329] self-start shadow-sm border border-[#2D3329]/5' : 'bg-[#A96142] text-white self-end shadow-sm'}`}>
+                                    {msg.text}
+                                </div>
+                            ))}
+                        </div>
+                        {/* Chat Input */}
+                        <form onSubmit={handleSendMessage} className="p-3 border-t border-[#2D3329]/10 flex gap-2 bg-white">
+                            <input
+                                type="text"
+                                value={chatMessage}
+                                onChange={(e) => setChatMessage(e.target.value)}
+                                placeholder="Write a message..."
+                                className="flex-grow border border-[#2D3329]/10 rounded px-3 py-1.5 text-xs font-avenir focus:outline-none focus:border-[#A96142]"
+                            />
+                            <button type="submit" className="bg-[#A96142] text-white px-3 py-1.5 rounded text-xs font-avenir hover:bg-[#8f5237] transition-colors">
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

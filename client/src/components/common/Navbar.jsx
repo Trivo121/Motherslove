@@ -40,64 +40,83 @@ export default function Navbar({ cartCount = 0 }) {
         window.location.href = '/';
     };
 
+    const currentPath = window.location.pathname;
+    const isActive = (link) => {
+        const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
+        const targetPath = paths[link];
+        if (targetPath === '/') return currentPath === '/';
+        if (targetPath === '#') return false;
+        return currentPath.startsWith(targetPath);
+    };
+
     return (
-        <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white sticky top-0 z-40 border-b border-[#2D3329]/5">
-            <div className="flex items-center gap-6">
-                <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
-                <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
-                    {navLinks.map((link, i) => {
-                        const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
-                        return (
-                            <a 
-                                key={i} 
-                                onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} 
-                                href="#" 
-                                className={`cursor-pointer hover:text-[#A96142] transition-colors`}
-                            >
-                                {link}
-                            </a>
-                        );
-                    })}
-                </div>
+        <div className="sticky top-0 z-40 w-full">
+            {/* Utility Bar */}
+            <div className="bg-[#FDF6F3] text-[#737373] text-[10px] sm:text-[11px] font-avenir tracking-widest py-2 px-6 md:px-10 flex justify-between items-center border-b border-[#2D3329]/5">
+                <span className="font-light">SALE ONGOING</span>
+                <span className="hidden sm:inline font-light">UP TO 50% OFF ON SELECTED PRODUCTS</span>
+                <button onClick={() => navigate('/shop')} className="hover:text-[#A96142] transition-colors uppercase font-light text-[10px] cursor-pointer">Shop Sale</button>
             </div>
 
-            <button onClick={() => navigate('/')} className="font-avenir text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
-                MOTHER'S LOVE
-            </button>
-
-            <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
-                <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
-                    {user ? `Hi, ${displayName}` : 'Account'}
-                    <ChevronIcon size={14} className={`transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {accountOpen && (
-                    <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
-                        {user ? (
-                            <>
-                                <div className="px-4 py-2 border-b border-[#2D3329]/10 text-[#737373] text-xs break-all mb-1">
-                                    {user.email}
-                                </div>
-                                {profile?.role === 'admin' && (
-                                    <button onClick={() => { setAccountOpen(false); navigate('/admin'); }} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Admin Dashboard</button>
-                                )}
-                                <button onClick={() => { setAccountOpen(false); navigate('/profile'); }} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">My Profile</button>
-                                <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Out</button>
-                            </>
-                        ) : (
-                            <>
-                                <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
-                                <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
-                            </>
-                        )}
+            <nav className="grid grid-cols-3 items-center gap-4 px-6 md:px-10 py-5 bg-white border-b border-[#2D3329]/5">
+                <div className="flex items-center gap-6">
+                    <img src={logo} alt="Mother's Love" className="h-9 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
+                    <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
+                        {navLinks.map((link, i) => {
+                            const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
+                            const active = isActive(link);
+                            return (
+                                <a 
+                                    key={i} 
+                                    onClick={(e) => { e.preventDefault(); navigate(paths[link] || '#'); }} 
+                                    href="#" 
+                                    className={`cursor-pointer transition-colors ${active ? 'text-[#A96142] font-semibold' : 'hover:text-[#A96142]'}`}
+                                >
+                                    {link}
+                                </a>
+                            );
+                        })}
                     </div>
-                )}
-                <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
-                    <BagIcon size={20} />
-                    {cartCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
-                    )}
+                </div>
+
+                <button onClick={() => navigate('/')} className="font-cinzel text-xl md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors">
+                    MOTHER'S LOVE
                 </button>
-            </div>
-        </nav>
+
+                <div className="flex items-center gap-6 justify-end text-[#2D3329] text-sm font-avenir font-light relative">
+                    <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-1 hover:text-[#A96142] transition-colors">
+                        {user ? `Hi, ${displayName}` : 'Account'}
+                        <ChevronIcon size={14} className={`transition-transform ${accountOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {accountOpen && (
+                        <div className="absolute top-8 right-14 bg-white border border-[#2D3329]/10 shadow-lg py-2 w-40 text-sm z-50">
+                            {user ? (
+                                <>
+                                    <div className="px-4 py-2 border-b border-[#2D3329]/10 text-[#737373] text-xs break-all mb-1">
+                                        {user.email}
+                                    </div>
+                                    {profile?.role === 'admin' && (
+                                        <button onClick={() => { setAccountOpen(false); navigate('/admin'); }} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Admin Dashboard</button>
+                                    )}
+                                    <button onClick={() => { setAccountOpen(false); navigate('/profile'); }} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">My Profile</button>
+                                    <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Out</button>
+                                </>
+                            ) : (
+                                <>
+                                    <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign In</button>
+                                    <button onClick={() => window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'signup' } }))} className="block w-full text-left px-4 py-2 hover:bg-[#FDF6F3] hover:text-[#A96142]">Sign Up</button>
+                                </>
+                            )}
+                        </div>
+                    )}
+                    <button onClick={() => navigate('/cart')} aria-label="Shopping cart" className="relative hover:text-[#A96142] transition-colors">
+                        <BagIcon size={20} />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-[#A96142] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+                        )}
+                    </button>
+                </div>
+            </nav>
+        </div>
     );
 }

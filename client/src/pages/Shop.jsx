@@ -67,13 +67,15 @@ function FilterPill({ item, activeFilter, onSelect }) {
 }
 
 
-function ProductCard({ product }) {
+function ProductCard({ product, index }) {
     const navigate = useNavigate();
     const { addToCart } = useCart();
+    const backgrounds = ['bg-[#E3DDD6]', 'bg-[#D5D0C8]', 'bg-[#CDD6CE]', 'bg-[#D9D5C9]'];
+    const cardBg = backgrounds[index % backgrounds.length];
     return (
         <div className="group block relative">
             <Link to={`/product/${product.id}`} className="block">
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#FDF6F3]">
+                <div className={`relative aspect-[3/4] overflow-hidden ${cardBg}`}>
                     {product.badge && (
                         <span className="absolute top-3 left-3 z-10 bg-[#A96142] text-white text-xs font-avenir tracking-wide px-3 py-1">
                             {product.badge}
@@ -87,7 +89,16 @@ function ProductCard({ product }) {
                 </div>
                 <h3 className="mt-4 font-avenir text-[#2D3329] text-base truncate">{product.name}</h3>
                 <p className="font-avenir text-sm text-[#737373]">{product.color}</p>
-                <p className="font-avenir text-[#A96142] mt-1">{product.priceFormatted || product.price}</p>
+                <p className="font-avenir text-[#A96142] mt-1">
+                    {product.on_sale && product.salePriceFormatted ? (
+                        <>
+                            <span className="line-through text-[#737373] mr-2">{product.priceFormatted || product.price}</span>
+                            <span>{product.salePriceFormatted}</span>
+                        </>
+                    ) : (
+                        product.priceFormatted || product.price
+                    )}
+                </p>
             </Link>
             <button 
                 onClick={(e) => { e.preventDefault(); addToCart(product, product.sizes?.[0] || 'M', 1, product.color || 'Standard'); navigate('/checkout'); }}
@@ -119,6 +130,7 @@ export default function AllProductsPage() {
                         ...p,
                         img: p.image_url,
                         priceFormatted: `₹${p.price.toLocaleString('en-IN')}.00`,
+                        salePriceFormatted: p.sale_price ? `₹${p.sale_price.toLocaleString('en-IN')}.00` : null,
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
                         color: p.category || 'Standard'
                     }));
@@ -182,8 +194,8 @@ export default function AllProductsPage() {
                 ) : (
                 <>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 max-w-6xl mx-auto">
-                        {visibleProducts.map((product) => (
-                            <ProductCard key={product.name} product={product} />
+                        {visibleProducts.map((product, idx) => (
+                            <ProductCard key={product.name} product={product} index={idx} />
                         ))}
                     </div>
                     {visibleProducts.length === 0 && (
@@ -193,10 +205,10 @@ export default function AllProductsPage() {
             )}
             </section>
 
-            <footer className="bg-[#2D3329] text-white px-6 md:px-10 py-10">
+            <footer className="bg-[#2D3329] text-[#737373] px-6 md:px-10 py-16 border-t border-white/5">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-avenir">
-                    <span className="tracking-widest">MOTHER'S LOVE</span>
-                    <span className="text-white/60">© 2026 Mother's Love. All rights reserved.</span>
+                    <span className="tracking-widest text-white font-cinzel">MOTHER'S LOVE</span>
+                    <span className="text-[#737373]/60">© 2026 Mother's Love. All rights reserved.</span>
                 </div>
             </footer>
 

@@ -14,6 +14,8 @@ class Product(Base):
     category = Column(String, nullable=True)
     stock = Column(Integer, nullable=False, default=0)
     published = Column(Boolean, nullable=False, server_default=text("false"))
+    on_sale = Column(Boolean, nullable=False, server_default=text("false"))
+    sale_price = Column(Integer, nullable=True)
     image_url = Column(String, nullable=True)
     image_urls = Column(ARRAY(String), nullable=False, server_default=text("'{}'::text[]"))
     sizes = Column(ARRAY(String), nullable=False, server_default=text("'{}'::text[]"))
