@@ -29,7 +29,7 @@ function FilterPill({ item, activeFilter, onSelect }) {
         return (
             <div className="relative group">
                 <button
-                    className={`flex items-center gap-2 px-6 py-3 border font-avenir text-sm tracking-wide transition-colors ${isActive
+                    className={`flex shrink-0 whitespace-nowrap items-center gap-2 px-6 py-3 border font-avenir text-sm tracking-wide transition-colors ${isActive
                         ? 'bg-[#A96142] border-[#A96142] text-white'
                         : 'bg-white border-[#2D3329]/25 text-[#2D3329] group-hover:border-[#A96142] group-hover:text-[#A96142]'
                         }`}
@@ -56,7 +56,7 @@ function FilterPill({ item, activeFilter, onSelect }) {
     return (
         <button
             onClick={() => onSelect(item.key)}
-            className={`flex items-center gap-2 px-6 py-3 border font-avenir text-sm tracking-wide transition-colors ${active
+            className={`flex shrink-0 whitespace-nowrap items-center gap-2 px-6 py-3 border font-avenir text-sm tracking-wide transition-colors ${active
                 ? 'bg-[#A96142] border-[#A96142] text-white'
                 : 'bg-white border-[#2D3329]/25 text-[#2D3329] hover:border-[#A96142] hover:text-[#A96142]'
                 }`}
@@ -158,7 +158,7 @@ export default function AllProductsPage() {
             label: 'T-Shirts',
             subItems: [
                 { key: 'unique', label: 'Unique' },
-                { key: 'formal', label: 'Formal' }
+                { key: 'formal', label: 'Official' }
             ]
         },
         { key: 'shirts', label: 'Shirts' },
@@ -180,7 +180,7 @@ export default function AllProductsPage() {
                 <div className="w-16 h-px bg-[#2D3329]/30 mx-auto mt-6" />
             </header>
 
-            <div className="flex flex-wrap items-center justify-center gap-3 px-6 md:px-10 pb-12">
+            <div className="flex overflow-x-auto md:flex-wrap items-center gap-3 px-6 md:px-10 pb-12 md:justify-center scrollbar-hide">
                 {filters.map((f) => (
                     <FilterPill key={f.key} item={f} activeFilter={activeFilter} onSelect={setActiveFilter} />
                 ))}

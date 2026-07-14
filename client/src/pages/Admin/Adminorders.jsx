@@ -173,7 +173,11 @@ export default function AdminOrders() {
                 const res = await fetch(`${API_URL}/orders`);
                 if (res.ok) {
                     const data = await res.json();
-                    setOrders(data);
+                    const normalized = data.map(o => ({
+                        ...o,
+                        status: o.status ? (o.status.charAt(0).toUpperCase() + o.status.slice(1).toLowerCase()) : 'Pending'
+                    }));
+                    setOrders(normalized);
                 }
             } catch (err) {
                 console.error("Failed to fetch orders:", err);
@@ -184,13 +188,15 @@ export default function AdminOrders() {
 
     async function handleUpdateStatus(orderId, nextStatus) {
         try {
+            const backendStatus = nextStatus.toUpperCase();
             const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: nextStatus })
+                body: JSON.stringify({ status: backendStatus })
             });
             if (res.ok) {
                 const updatedOrder = await res.json();
+                updatedOrder.status = updatedOrder.status ? (updatedOrder.status.charAt(0).toUpperCase() + updatedOrder.status.slice(1).toLowerCase()) : 'Pending';
                 setOrders(prev => prev.map(o => o.id === orderId ? updatedOrder : o));
             }
         } catch (err) {

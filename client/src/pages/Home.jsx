@@ -86,7 +86,7 @@ const HomePage = () => {
             bgColor: 'bg-[#8A8B78]',
         },
         {
-            label: 'Shop Formal Prints',
+            label: 'Shop Official Prints',
             img: formalCover,
             target: 'formal',
             bgColor: 'bg-[#98A4AC]',
@@ -165,10 +165,9 @@ const HomePage = () => {
                         <img
                             src={cat.img}
                             alt={cat.label}
-                            className="absolute inset-0 w-full h-full object-cover opacity-75 mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out"
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
-                        <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
-                        <div className="absolute left-8 bottom-8 flex items-center gap-2 text-white font-avenir text-sm tracking-widest uppercase font-semibold z-10">
+                        <div className="absolute left-8 bottom-8 flex items-center gap-2 text-white font-avenir text-sm tracking-widest uppercase font-normal z-10">
                             {cat.label}
                             <ArrowIcon size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </div>
@@ -190,7 +189,7 @@ const HomePage = () => {
                     </div>
                     <div className="flex flex-col items-center gap-3">
                         <ShirtIcon size={28} className="text-[#A96142]" />
-                        <p className="font-avenir text-sm text-[#2D3329]">Formal Solids</p>
+                        <p className="font-avenir text-sm text-[#2D3329]">Official Solids</p>
                     </div>
                     <div className="flex flex-col items-center gap-3">
                         <SproutIcon size={28} className="text-[#A96142]" />
@@ -233,7 +232,7 @@ const HomePage = () => {
                     <input
                         type="email"
                         placeholder="Your email address"
-                        className="flex-1 border border-white bg-white px-4 py-3.5 text-sm font-avenir text-[#2D3329] placeholder:text-[#737373]/60 focus:outline-none focus:border-[#A96142]"
+                        className="flex-1 border border-white bg-white px-4 py-3.5 text-base md:text-sm font-avenir text-[#2D3329] placeholder:text-[#737373]/60 focus:outline-none focus:border-[#A96142]"
                     />
                     <button className="px-8 bg-[#A96142] text-white text-sm uppercase tracking-widest font-avenir font-medium hover:bg-[#8f5237] transition-colors duration-300">
                         JOIN
@@ -318,7 +317,7 @@ const HomePage = () => {
                                 value={chatMessage}
                                 onChange={(e) => setChatMessage(e.target.value)}
                                 placeholder="Write a message..."
-                                className="flex-grow border border-[#2D3329]/10 rounded px-3 py-1.5 text-xs font-avenir focus:outline-none focus:border-[#A96142]"
+                                className="flex-grow border border-[#2D3329]/10 rounded px-3 py-1.5 text-base md:text-xs font-avenir focus:outline-none focus:border-[#A96142]"
                             />
                             <button type="submit" className="bg-[#A96142] text-white px-3 py-1.5 rounded text-xs font-avenir hover:bg-[#8f5237] transition-colors">
                                 Send

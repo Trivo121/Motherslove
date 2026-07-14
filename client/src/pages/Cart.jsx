@@ -44,46 +44,77 @@ export default function CartPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <div className="lg:col-span-2 overflow-x-auto">
-                        <table className="w-full text-left font-avenir min-w-[500px]">
-                            <thead>
-                                <tr className="border-b border-[#2D3329]/10 text-[#737373] text-sm uppercase tracking-widest">
-                                    <th className="pb-4 font-normal">Product</th>
-                                    <th className="pb-4 font-normal text-center">Quantity</th>
-                                    <th className="pb-4 font-normal text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cartItems.map((item, idx) => {
-                                    let priceNum = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : item.price || 0;
-                                    return (
-                                        <tr key={idx} className="border-b border-[#2D3329]/10">
-                                            <td className="py-6 flex items-center gap-4">
-                                                <div className="w-20 h-24 bg-white shrink-0 p-1 border border-[#2D3329]/10">
-                                                    {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
+                    <div className="lg:col-span-2">
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="w-full text-left font-avenir min-w-[500px]">
+                                <thead>
+                                    <tr className="border-b border-[#2D3329]/10 text-[#737373] text-sm uppercase tracking-widest">
+                                        <th className="pb-4 font-normal">Product</th>
+                                        <th className="pb-4 font-normal text-center">Quantity</th>
+                                        <th className="pb-4 font-normal text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cartItems.map((item, idx) => {
+                                        let priceNum = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : item.price || 0;
+                                        return (
+                                            <tr key={idx} className="border-b border-[#2D3329]/10">
+                                                <td className="py-6 flex items-center gap-4">
+                                                    <div className="w-20 h-24 bg-white shrink-0 p-1 border border-[#2D3329]/10">
+                                                        {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[#2D3329] text-base">{item.name}</p>
+                                                        <p className="text-[#737373] text-sm mt-1">Size: {item.size}</p>
+                                                        <p className="text-[#A96142] text-sm mt-1">₹{priceNum.toLocaleString('en-IN')}</p>
+                                                        <button onClick={() => removeFromCart(item.id, item.size, item.color)} className="text-[#A96142] text-xs underline mt-2 hover:text-red-600 transition-colors">Remove</button>
+                                                    </div>
+                                                </td>
+                                                <td className="py-6 text-center">
+                                                    <div className="flex items-center justify-center border border-[#2D3329]/25 w-fit mx-auto">
+                                                        <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty - 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">-</button>
+                                                        <span className="text-[#2D3329] font-avenir w-8 flex items-center justify-center">{item.qty}</span>
+                                                        <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty + 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">+</button>
+                                                    </div>
+                                                </td>
+                                                <td className="py-6 text-right text-[#2D3329] text-lg">
+                                                    ₹{(priceNum * item.qty).toLocaleString('en-IN')}
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Stacked View */}
+                        <div className="md:hidden flex flex-col gap-6">
+                            {cartItems.map((item, idx) => {
+                                let priceNum = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : item.price || 0;
+                                return (
+                                    <div key={idx} className="flex gap-4 border-b border-[#2D3329]/10 pb-6">
+                                        <div className="w-24 h-32 bg-white shrink-0 p-1 border border-[#2D3329]/10">
+                                            {item.img ? <img src={item.img} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#FDF6F3]" />}
+                                        </div>
+                                        <div className="flex flex-col flex-1">
+                                            <p className="text-[#2D3329] text-base leading-tight">{item.name}</p>
+                                            <p className="text-[#737373] text-sm mt-1">Size: {item.size}</p>
+                                            <p className="text-[#A96142] text-sm mt-1 mb-3">₹{priceNum.toLocaleString('en-IN')}</p>
+                                            
+                                            <div className="mt-auto flex items-end justify-between">
+                                                <div className="flex items-center justify-center border border-[#2D3329]/25 w-fit">
+                                                    <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty - 1)} className="w-7 h-7 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">-</button>
+                                                    <span className="text-[#2D3329] font-avenir w-7 text-sm flex items-center justify-center">{item.qty}</span>
+                                                    <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty + 1)} className="w-7 h-7 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">+</button>
                                                 </div>
-                                                <div>
-                                                    <p className="text-[#2D3329] text-base">{item.name}</p>
-                                                    <p className="text-[#737373] text-sm mt-1">Size: {item.size}</p>
-                                                    <p className="text-[#A96142] text-sm mt-1">₹{priceNum.toLocaleString('en-IN')}</p>
-                                                    <button onClick={() => removeFromCart(item.id, item.size, item.color)} className="text-[#A96142] text-xs underline mt-2 hover:text-red-600 transition-colors">Remove</button>
-                                                </div>
-                                            </td>
-                                            <td className="py-6 text-center">
-                                                <div className="flex items-center justify-center border border-[#2D3329]/25 w-fit mx-auto">
-                                                    <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty - 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">-</button>
-                                                    <span className="text-[#2D3329] font-avenir w-8 flex items-center justify-center">{item.qty}</span>
-                                                    <button onClick={() => updateQuantity(item.id, item.size, item.color, item.qty + 1)} className="w-8 h-8 flex items-center justify-center text-[#2D3329] hover:text-[#A96142] transition-colors">+</button>
-                                                </div>
-                                            </td>
-                                            <td className="py-6 text-right text-[#2D3329] text-lg">
-                                                ₹{(priceNum * item.qty).toLocaleString('en-IN')}
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
+                                                <button onClick={() => removeFromCart(item.id, item.size, item.color)} className="text-[#A96142] text-xs underline hover:text-red-600 transition-colors">Remove</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
                     </div>
                     <div className="bg-[#FDF6F3] border border-[#FDF6F3] p-8 self-start">
                         <h2 className="font-avenir uppercase tracking-widest text-[#2D3329] text-sm mb-6 font-semibold">Order Summary</h2>

@@ -413,7 +413,7 @@ export default function AdminProductForm() {
                                     className="w-full px-4 py-2.5 border border-[#2D3329]/20 font-avenir text-sm text-[#2D3329] focus:outline-none focus:border-[#A96142] transition-colors bg-white appearance-none"
                                 >
                                     <option value="unique">T-Shirts - Unique</option>
-                                    <option value="formal">T-Shirts - Formal</option>
+                                    <option value="formal">T-Shirts - Official</option>
                                     <option value="shirts">Shirts</option>
                                     <option value="pants">Pants</option>
                                     <option value="caps">Caps</option>
