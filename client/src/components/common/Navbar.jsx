@@ -83,7 +83,7 @@ export default function Navbar({ cartCount = 0 }) {
                     <button className="md:hidden text-[#2D3329] hover:text-[#A96142] transition-colors" onClick={() => setMenuOpen(true)}>
                         <MenuIcon size={24} />
                     </button>
-                    <img src={logo} alt="Mother's Love" className="hidden sm:block h-7 md:h-9 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
+                    <img src={logo} alt="Mother's Love" className="block h-6 sm:h-7 md:h-9 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
                     <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
                         {navLinks.map((link, i) => {
                             const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
@@ -102,7 +102,7 @@ export default function Navbar({ cartCount = 0 }) {
                     </div>
                 </div>
 
-                <button onClick={() => navigate('/')} className="font-cinzel text-lg md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors justify-self-center truncate w-full">
+                <button onClick={() => navigate('/')} className="font-cinzel text-base sm:text-lg md:text-2xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors justify-self-center whitespace-nowrap w-full">
                     MOTHER'S LOVE
                 </button>
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import Navbar from '../components/common/Navbar.jsx';
+import Footer from '../components/common/Footer.jsx';
 
 /* =========================================================================
    Note on the filename: this is the "All Products" catalog/shop page from
@@ -168,8 +169,15 @@ export default function AllProductsPage() {
         { key: 'sweatshirts', label: 'Sweatshirts' },
     ];
 
-    const visibleProducts =
-        activeFilter === 'all' ? products : products.filter((p) => p.category === activeFilter);
+    const visibleProducts = activeFilter === 'all' 
+        ? products 
+        : products.filter((p) => {
+            const cat = (p.category || '').toLowerCase();
+            const filter = activeFilter.toLowerCase();
+            if (filter === 'formal' && (cat === 'formal' || cat === 'official')) return true;
+            if (filter === 'official' && (cat === 'formal' || cat === 'official')) return true;
+            return cat === filter;
+        });
 
     return (
         <div className="min-h-screen bg-white font-avenir">
@@ -180,7 +188,7 @@ export default function AllProductsPage() {
                 <div className="w-16 h-px bg-[#2D3329]/30 mx-auto mt-6" />
             </header>
 
-            <div className="flex overflow-x-auto md:flex-wrap items-center gap-3 px-6 md:px-10 pb-12 md:justify-center scrollbar-hide">
+            <div className="flex flex-wrap items-center justify-center gap-3 px-6 md:px-10 pb-12">
                 {filters.map((f) => (
                     <FilterPill key={f.key} item={f} activeFilter={activeFilter} onSelect={setActiveFilter} />
                 ))}
@@ -205,12 +213,7 @@ export default function AllProductsPage() {
             )}
             </section>
 
-            <footer className="bg-[#2D3329] text-[#737373] px-6 md:px-10 py-16 border-t border-white/5">
-                <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-avenir">
-                    <span className="tracking-widest text-white font-cinzel">MOTHER'S LOVE</span>
-                    <span className="text-[#737373]/60">© 2026 Mother's Love. All rights reserved.</span>
-                </div>
-            </footer>
+            <Footer />
 
 
         </div>

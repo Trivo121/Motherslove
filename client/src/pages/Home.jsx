@@ -8,6 +8,7 @@ import unique4 from '../assets/unique/unique 4.PNG';
 import uniqCover from '../assets/unique/justice.PNG';
 import formalCover from '../assets/formal/formal cover.JPEG';
 import Navbar from '../components/common/Navbar.jsx';
+import Footer from '../components/common/Footer.jsx';
 
 /* ---------- Inline icons (no external icon package) ---------- */
 const Icon = ({ children, size = 20, className = '' }) => (
@@ -106,6 +107,7 @@ const HomePage = () => {
                         ...p,
                         img: p.image_url,
                         priceFormatted: `₹${p.price.toLocaleString('en-IN')}.00`,
+                        salePriceFormatted: p.sale_price ? `₹${p.sale_price.toLocaleString('en-IN')}.00` : null,
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
                         color: p.category || 'Standard'
                     }));
@@ -217,7 +219,16 @@ const HomePage = () => {
                                     )}
                                 </div>
                                 <h3 className="font-avenir text-sm text-[#2D3329] group-hover:text-[#A96142] transition-colors">{p.name}</h3>
-                                <p className="font-avenir text-sm text-[#737373] mt-1">{p.priceFormatted || p.price}</p>
+                                <p className="font-avenir text-sm mt-1">
+                                    {p.on_sale && p.salePriceFormatted ? (
+                                        <>
+                                            <span className="line-through text-[#737373]/60 mr-2">{p.priceFormatted || p.price}</span>
+                                            <span className="text-[#A96142]">{p.salePriceFormatted}</span>
+                                        </>
+                                    ) : (
+                                        <span className="text-[#737373]">{p.priceFormatted || p.price}</span>
+                                    )}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -240,41 +251,8 @@ const HomePage = () => {
                 </form>
             </section>
 
-            {/* Footer - Charcoal Background & Olive Grey secondary links */}
-            <footer className="bg-[#2D3329] text-[#737373] pt-16 pb-8 px-6 md:px-10 border-t border-white/5">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-10 max-w-6xl mx-auto mb-12">
-                    <div>
-                        <h3 className="font-cinzel text-xl tracking-widest mb-3 text-[#E3DDD6]">MOTHER'S LOVE</h3>
-                        <p className="font-avenir font-light text-sm text-[#737373] leading-relaxed">Mindfully crafted essentials for a more<br/>sustainable wardrobe.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-avenir text-xs tracking-widest uppercase mb-4 text-[#737373]/60">Shop</h4>
-                        <ul className="space-y-2 font-avenir font-light text-sm">
-                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#E3DDD6] transition-colors cursor-pointer text-[#737373]">Unique Prints</button></li>
-                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#E3DDD6] transition-colors cursor-pointer text-[#737373]">Official Prints</button></li>
-                            <li><button onClick={() => navigate('/shop')} className="hover:text-[#E3DDD6] transition-colors cursor-pointer text-[#737373]">New Arrivals</button></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-avenir text-xs tracking-widest uppercase mb-4 text-[#737373]/60">Help</h4>
-                        <ul className="space-y-2 font-avenir font-light text-sm">
-                            <li><a href="#" className="hover:text-[#A96142] transition-colors text-[#737373]">Shipping &amp; Returns</a></li>
-                            <li><a href="#" className="hover:text-[#A96142] transition-colors text-[#737373]">Contact Us</a></li>
-                            <li><a href="#" className="hover:text-[#A96142] transition-colors text-[#737373]">FAQ</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-avenir text-xs tracking-widest uppercase mb-4 text-[#737373]/60">Follow</h4>
-                        <ul className="space-y-2 font-avenir font-light text-sm">
-                            <li><a href="#" className="hover:text-[#A96142] transition-colors text-[#737373]">Instagram</a></li>
-                            <li><a href="#" className="hover:text-[#A96142] transition-colors text-[#737373]">Pinterest</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div className="border-t border-[#737373]/10 pt-6 text-center font-avenir font-light text-xs text-[#737373]/60">
-                    © 2026 Mother's Love. All rights reserved.
-                </div>
-            </footer>
+            {/* Footer */}
+            <Footer />
 
             {/* Chat Widget Button */}
             <div className="fixed bottom-6 right-6 z-50">
