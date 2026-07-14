@@ -74,6 +74,7 @@ export default function Navbar({ cartCount = 0 }) {
             {/* Utility Bar */}
             <div className="bg-[#FDF6F3] text-[#737373] text-[10px] sm:text-[11px] font-avenir tracking-widest py-2 px-4 md:px-10 flex justify-between items-center border-b border-[#2D3329]/5">
                 <span className="font-light">SALE ONGOING</span>
+                <img src={logo} alt="Mother's Love" className="h-5 w-auto object-contain sm:hidden cursor-pointer" onClick={() => navigate('/')} />
                 <span className="hidden sm:inline font-light">UP TO 50% OFF ON SELECTED PRODUCTS</span>
                 <button onClick={() => navigate('/shop')} className="hover:text-[#A96142] transition-colors uppercase font-light text-[10px] cursor-pointer">Shop Sale</button>
             </div>
@@ -83,7 +84,7 @@ export default function Navbar({ cartCount = 0 }) {
                     <button className="md:hidden text-[#2D3329] hover:text-[#A96142] transition-colors" onClick={() => setMenuOpen(true)}>
                         <MenuIcon size={24} />
                     </button>
-                    <img src={logo} alt="Mother's Love" className="block h-6 sm:h-7 md:h-9 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
+                    <img src={logo} alt="Mother's Love" className="hidden sm:block h-7 md:h-9 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
                     <div className="hidden md:flex items-center gap-6 text-[#2D3329] text-sm font-avenir font-light">
                         {navLinks.map((link, i) => {
                             const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
