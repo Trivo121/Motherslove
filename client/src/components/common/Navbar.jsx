@@ -72,14 +72,20 @@ export default function Navbar({ cartCount = 0 }) {
     return (
         <div className="sticky top-0 z-40 w-full pt-[env(safe-area-inset-top)] bg-white">
             {/* Utility Bar */}
-            <div className="bg-[#FDF6F3] text-[#737373] text-[10px] sm:text-[11px] font-avenir tracking-widest py-2 px-4 md:px-10 flex justify-between items-center border-b border-[#2D3329]/5">
-                <span className="font-light">SALE ONGOING</span>
-                <img src={logo} alt="Mother's Love" className="h-5 w-auto object-contain sm:hidden cursor-pointer" onClick={() => navigate('/')} />
-                <span className="hidden sm:inline font-light">UP TO 50% OFF ON SELECTED PRODUCTS</span>
-                <button onClick={() => navigate('/shop')} className="hover:text-[#A96142] transition-colors uppercase font-light text-[10px] cursor-pointer">Shop Sale</button>
+            <div className="bg-[#FDF6F3] text-[#737373] text-[10px] sm:text-[11px] font-avenir tracking-widest py-2 px-4 md:px-10 grid grid-cols-[1fr_auto_1fr] items-center border-b border-[#2D3329]/5">
+                <div className="text-left">
+                    <span className="font-light">SALE ONGOING</span>
+                </div>
+                <div className="flex justify-center">
+                    <img src={logo} alt="Mother's Love" className="h-4 w-auto object-contain sm:hidden cursor-pointer" onClick={() => navigate('/')} />
+                    <span className="hidden sm:inline font-light whitespace-nowrap">UP TO 50% OFF ON SELECTED PRODUCTS</span>
+                </div>
+                <div className="text-right">
+                    <button onClick={() => navigate('/shop')} className="hover:text-[#A96142] transition-colors uppercase font-light text-[10px] cursor-pointer">Shop Sale</button>
+                </div>
             </div>
 
-            <nav className="grid grid-cols-3 items-center px-4 md:px-10 py-4 md:py-5 bg-white border-b border-[#2D3329]/5 relative">
+            <nav className="grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-10 py-4 md:py-5 bg-white border-b border-[#2D3329]/5 relative">
                 <div className="flex items-center gap-4">
                     <button className="md:hidden text-[#2D3329] hover:text-[#A96142] transition-colors" onClick={() => setMenuOpen(true)}>
                         <MenuIcon size={24} />
