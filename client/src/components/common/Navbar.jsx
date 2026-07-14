@@ -109,7 +109,7 @@ export default function Navbar({ cartCount = 0 }) {
                     </div>
                 </div>
 
-                <button onClick={() => navigate('/')} className="font-cinzel text-lg sm:text-2xl md:text-3xl font-light tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors justify-self-center whitespace-nowrap w-full">
+                <button onClick={() => navigate('/')} className="font-cinzel text-lg sm:text-2xl md:text-3xl tracking-widest text-[#2D3329] text-center hover:text-[#A96142] transition-colors justify-self-center whitespace-nowrap w-full">
                     MOTHER'S LOVE
                 </button>
 
