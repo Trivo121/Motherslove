@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { categoryPathLabel } from '../../data/categories.js';
 
 
 /* =========================================================================
@@ -159,7 +160,7 @@ function ProductCard({ product, onEdit, onDelete }) {
                             {product.id}
                         </p>
                         <p className="font-avenir text-[10px] text-[#A96142] uppercase tracking-wider font-semibold whitespace-nowrap">
-                            {product.category || 'Uncategorized'}
+                            {categoryPathLabel(product.category)}
                         </p>
                     </div>
                     <h3 className="font-poppins text-base font-light text-[#2D3329] leading-snug">

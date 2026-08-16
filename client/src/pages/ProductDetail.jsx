@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext.jsx';
 import { useParams, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.PNG';
 import Navbar from '../components/common/Navbar.jsx';
+import { categoryLabel } from '../data/categories.js';
 
 /* ---------- Icons ---------- */
 const Icon = ({ children, size = 20, className = '' }) => (
@@ -131,7 +132,7 @@ export default function ProductPage() {
                         priceFormatted: `₹${p.price.toLocaleString('en-IN')}.00`,
                         salePriceFormatted: p.sale_price ? `₹${p.sale_price.toLocaleString('en-IN')}.00` : null,
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
-                        color: p.category || 'Standard'
+                        color: categoryLabel(p.category)
                     }));
                     setAllProducts(mapped);
 
