@@ -7,8 +7,11 @@ import unique3 from '../assets/unique/unique3.PNG';
 import unique4 from '../assets/unique/unique 4.PNG';
 import uniqCover from '../assets/unique/justice.PNG';
 import formalCover from '../assets/formal/formal cover.JPEG';
+import capCover from '../assets/cap.png';
+import sweatshirtCover from '../assets/Sweatshirt.png';
 import Navbar from '../components/common/Navbar.jsx';
 import Footer from '../components/common/Footer.jsx';
+import { categoryLabel } from '../data/categories.js';
 
 /* ---------- Inline icons (no external icon package) ---------- */
 const Icon = ({ children, size = 20, className = '' }) => (
@@ -79,6 +82,8 @@ const HomePage = () => {
         setIsVisible(true);
     }, []);
 
+    /* `target` must be a key from ../data/categories.js — it's handed to the
+       shop as the active filter. */
     const categories = [
         {
             label: 'Shop Unique Prints',
@@ -91,6 +96,21 @@ const HomePage = () => {
             img: formalCover,
             target: 'formal',
             bgColor: 'bg-[#98A4AC]',
+        },
+        {
+            label: 'Shop Caps',
+            img: capCover,
+            target: 'caps',
+            bgColor: 'bg-[#EDEDEB]',
+            // Studio shot on a near-white backdrop — a white label would vanish.
+            textColor: 'text-[#2D3329]',
+        },
+        {
+            label: 'Shop Sweatshirts',
+            img: sweatshirtCover,
+            target: 'sweatshirts',
+            bgColor: 'bg-[#C6D0E0]',
+            textColor: 'text-[#2D3329]',
         },
     ];
 
@@ -109,7 +129,7 @@ const HomePage = () => {
                         priceFormatted: `₹${p.price.toLocaleString('en-IN')}.00`,
                         salePriceFormatted: p.sale_price ? `₹${p.sale_price.toLocaleString('en-IN')}.00` : null,
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
-                        color: p.category || 'Standard'
+                        color: categoryLabel(p.category)
                     }));
                     setFeaturedProducts(mapped.slice(0, 4));
                 }
@@ -156,7 +176,7 @@ const HomePage = () => {
                 <PrimaryButton onClick={() => navigate('/shop')}>Shop Now</PrimaryButton>
             </header>
 
-            {/* Split grid - Sage / Steel */}
+            {/* Category grid — 2x2 on desktop, stacked on mobile */}
             <section className="grid grid-cols-1 md:grid-cols-2">
                 {categories.map((cat) => (
                     <div 
@@ -169,7 +189,7 @@ const HomePage = () => {
                             alt={cat.label}
                             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
-                        <div className="absolute left-8 bottom-8 flex items-center gap-2 text-white font-avenir text-sm tracking-widest uppercase font-normal z-10">
+                        <div className={`absolute left-8 bottom-8 flex items-center gap-2 ${cat.textColor || 'text-white'} font-avenir text-sm tracking-widest uppercase font-normal z-10`}>
                             {cat.label}
                             <ArrowIcon size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </div>
