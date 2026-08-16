@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.PNG';
 import { useAuth } from '../../context/AuthContext';
@@ -60,6 +60,17 @@ export default function Navbar({ cartCount = 0 }) {
         window.location.href = '/';
     };
 
+    /* The sale strip fades away as soon as the page moves, and comes back
+       when you return to the top. */
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 8);
+        onScroll(); // the page may already be scrolled on mount
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
     const currentPath = window.location.pathname;
     const isActive = (link) => {
         const paths = { Home: '/', Shop: '/shop', About: '#', Contact: '#' };
@@ -71,8 +82,14 @@ export default function Navbar({ cartCount = 0 }) {
 
     return (
         <div className="sticky top-0 z-40 w-full pt-[env(safe-area-inset-top)] bg-white">
-            {/* Utility Bar */}
-            <div className="bg-[#FDF6F3] text-[#737373] text-[10px] sm:text-[11px] font-avenir tracking-widest py-2 px-4 md:px-10 grid grid-cols-[1fr_auto_1fr] items-center border-b border-[#2D3329]/5">
+            {/* Utility Bar — fades out and collapses once the page is scrolled */}
+            <div
+                aria-hidden={scrolled}
+                className={`bg-[#FDF6F3] text-[#737373] text-[10px] sm:text-[11px] font-avenir tracking-widest px-4 md:px-10 grid grid-cols-[1fr_auto_1fr] items-center overflow-hidden transition-all duration-300 ease-out motion-reduce:transition-none ${scrolled
+                    ? 'max-h-0 py-0 opacity-0 pointer-events-none border-b-0'
+                    : 'max-h-12 py-2 opacity-100 border-b border-[#2D3329]/5'
+                    }`}
+            >
                 <div className="text-left">
                     <span className="font-light">SALE ONGOING</span>
                 </div>
@@ -81,7 +98,7 @@ export default function Navbar({ cartCount = 0 }) {
                     <span className="hidden sm:inline font-light whitespace-nowrap">UP TO 50% OFF ON SELECTED PRODUCTS</span>
                 </div>
                 <div className="text-right">
-                    <button onClick={() => navigate('/shop')} className="hover:text-[#A96142] transition-colors uppercase font-light text-[10px] cursor-pointer">Shop Sale</button>
+                    <button onClick={() => navigate('/shop')} tabIndex={scrolled ? -1 : 0} className="hover:text-[#A96142] transition-colors uppercase font-light text-[10px] cursor-pointer">Shop Sale</button>
                 </div>
             </div>
 
