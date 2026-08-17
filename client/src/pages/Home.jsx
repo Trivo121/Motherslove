@@ -5,10 +5,12 @@ import unique1 from '../assets/unique/Unique1.PNG';
 import unique2 from '../assets/unique/unique2.PNG';
 import unique3 from '../assets/unique/unique3.PNG';
 import unique4 from '../assets/unique/unique 4.PNG';
-import uniqCover from '../assets/unique/justice.PNG';
-import formalCover from '../assets/formal/formal cover.JPEG';
+import tshirtCover from '../assets/tshirt.jpg';
+import shirtCover from '../assets/shirt.jpg';
+import trouserCover from '../assets/trousers.jpg';
 import capCover from '../assets/cap.png';
-import sweatshirtCover from '../assets/Sweatshirt.png';
+import sweatshirtCover from '../assets/sweatshirtt.jpg';
+import hoodieCover from '../assets/hoodie.jpg';
 import Navbar from '../components/common/Navbar.jsx';
 import Footer from '../components/common/Footer.jsx';
 import { categoryLabel } from '../data/categories.js';
@@ -83,34 +85,48 @@ const HomePage = () => {
     }, []);
 
     /* `target` must be a key from ../data/categories.js — it's handed to the
-       shop as the active filter. */
+       shop as the active filter. 'tshirts' is the group key, so that tile
+       covers both Unique and Official prints.
+
+       Every cover is a studio shot on a white or cream backdrop, so labels
+       default to the brand dark. Set textColor to override if a future cover
+       is dark enough to carry white. */
     const categories = [
         {
-            label: 'Shop Unique Prints',
-            img: uniqCover,
-            target: 'unique',
-            bgColor: 'bg-[#8A8B78]',
+            label: 'Shop T-Shirts',
+            img: tshirtCover,
+            target: 'tshirts',
+            bgColor: 'bg-[#EEF2F6]',
         },
         {
-            label: 'Shop Official Prints',
-            img: formalCover,
-            target: 'formal',
-            bgColor: 'bg-[#98A4AC]',
+            label: 'Shop Shirts',
+            img: shirtCover,
+            target: 'shirts',
+            bgColor: 'bg-[#F1EFEB]',
+        },
+        {
+            label: 'Shop Trousers',
+            img: trouserCover,
+            target: 'pants',
+            bgColor: 'bg-[#F2F2F2]',
         },
         {
             label: 'Shop Caps',
             img: capCover,
             target: 'caps',
             bgColor: 'bg-[#EDEDEB]',
-            // Studio shot on a near-white backdrop — a white label would vanish.
-            textColor: 'text-[#2D3329]',
         },
         {
             label: 'Shop Sweatshirts',
             img: sweatshirtCover,
             target: 'sweatshirts',
-            bgColor: 'bg-[#C6D0E0]',
-            textColor: 'text-[#2D3329]',
+            bgColor: 'bg-[#F1EDE7]',
+        },
+        {
+            label: 'Shop Hoodies',
+            img: hoodieCover,
+            target: 'hoodies',
+            bgColor: 'bg-[#DCE7F1]',
         },
     ];
 
@@ -189,7 +205,7 @@ const HomePage = () => {
                             alt={cat.label}
                             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
-                        <div className={`absolute left-8 bottom-8 flex items-center gap-2 ${cat.textColor || 'text-white'} font-avenir text-sm tracking-widest uppercase font-normal z-10`}>
+                        <div className={`absolute left-8 bottom-8 flex items-center gap-2 ${cat.textColor || 'text-[#2D3329]'} font-avenir text-sm tracking-widest uppercase font-normal z-10`}>
                             {cat.label}
                             <ArrowIcon size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </div>
