@@ -198,13 +198,13 @@ const HomePage = () => {
                 <PrimaryButton onClick={() => navigate('/shop')}>Shop Now</PrimaryButton>
             </header>
 
-            {/* Category grid — 16:9 banners, two per row on desktop, stacked on mobile */}
+            {/* Category grid — 2x2 on desktop, stacked on mobile */}
             <section className="grid grid-cols-1 md:grid-cols-2">
                 {categories.map((cat) => (
                     <div
                         key={cat.label}
                         onClick={() => navigate('/shop', { state: { category: cat.target } })}
-                        className={`group relative aspect-[16/9] overflow-hidden block ${cat.bgColor} cursor-pointer`}
+                        className={`group relative h-[480px] md:h-[620px] overflow-hidden block ${cat.bgColor} cursor-pointer`}
                     >
                         <img
                             src={cat.img}
