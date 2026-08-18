@@ -164,7 +164,7 @@ const HomePage = () => {
         const userMsg = { sender: 'user', text: chatMessage };
         setMessages(prev => [...prev, userMsg]);
         setChatMessage('');
-        
+
         setTimeout(() => {
             setMessages(prev => [...prev, {
                 sender: 'bot',
@@ -182,12 +182,18 @@ const HomePage = () => {
 
             {/* Hero */}
             <header className="px-6 md:px-10 py-24 text-center bg-white">
-                <h1 className="font-poppins font-extralight text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#2D3329] leading-tight">
-                    Simple. Meaningful. Yours.
+                {/* Brand mark stays inside the h1 so the page keeps a real
+                    heading for search engines and screen readers. */}
+                <h1 className="flex justify-center">
+                    <img
+                        src={logo}
+                        alt="Mother's Love"
+                        className="h-28 sm:h-36 md:h-44 lg:h-52 w-auto object-contain"
+                    />
                 </h1>
                 <div className="h-px max-w-lg mx-auto my-7 bg-gradient-to-r from-transparent via-[#2D3329]/25 to-transparent" />
                 <p className="font-avenir font-light text-xl text-[#737373] max-w-xl mx-auto mb-9">
-                    A small brand creating comfortable clothes that feel like home.
+                    we're all over the world.
                 </p>
                 <PrimaryButton onClick={() => navigate('/shop')}>Shop Now</PrimaryButton>
             </header>
@@ -195,9 +201,9 @@ const HomePage = () => {
             {/* Category grid — 2x2 on desktop, stacked on mobile */}
             <section className="grid grid-cols-1 md:grid-cols-2">
                 {categories.map((cat) => (
-                    <div 
-                        key={cat.label} 
-                        onClick={() => navigate('/shop', { state: { category: cat.target } })} 
+                    <div
+                        key={cat.label}
+                        onClick={() => navigate('/shop', { state: { category: cat.target } })}
                         className={`group relative h-[480px] md:h-[620px] overflow-hidden block ${cat.bgColor} cursor-pointer`}
                     >
                         <img
@@ -293,7 +299,7 @@ const HomePage = () => {
             {/* Chat Widget Button */}
             <div className="fixed bottom-6 right-6 z-50">
                 {!chatOpen ? (
-                    <button 
+                    <button
                         onClick={() => setChatOpen(true)}
                         className="w-14 h-14 bg-[#A96142] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-300 border border-[#A96142]"
                         aria-label="Open chat"
