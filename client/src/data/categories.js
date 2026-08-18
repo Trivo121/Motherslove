@@ -28,7 +28,9 @@ export const CATEGORY_TREE = [
         ],
     },
     { key: 'shirts', label: 'Shirts', aliases: ['casual shirt', 'button down', 'button up'] },
-    { key: 'pants', label: 'Pants', aliases: ['trousers', 'bottoms', 'joggers'] },
+    // Key stays 'pants' — that is the value already stored on existing
+    // products. Only the display label reads "Trousers".
+    { key: 'pants', label: 'Trousers', aliases: ['bottoms', 'joggers'] },
     { key: 'caps', label: 'Caps', aliases: ['hats', 'headwear'] },
     { key: 'hoodies', label: 'Hoodies', aliases: ['hoody', 'hooded sweatshirt'] },
     // 'sweaters'/'pullovers' share this bucket — the shop has no separate
