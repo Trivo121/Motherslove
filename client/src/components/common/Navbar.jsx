@@ -94,7 +94,6 @@ export default function Navbar({ cartCount = 0 }) {
                     <span className="font-light">SALE ONGOING</span>
                 </div>
                 <div className="flex justify-center">
-                    <img src={logo} alt="Mother's Love" className="h-4 w-auto object-contain sm:hidden cursor-pointer" onClick={() => navigate('/')} />
                     <span className="hidden sm:inline font-light whitespace-nowrap">UP TO 50% OFF ON SELECTED PRODUCTS</span>
                 </div>
                 <div className="text-right">
