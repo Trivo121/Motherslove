@@ -39,8 +39,17 @@ def checkout_cart(order_data: OrderCreate, db: Session = Depends(get_db)):
         if product.stock < item.quantity:
             raise HTTPException(status_code=400, detail=f"Insufficient stock for {product.name}. Available: {product.stock}")
             
-        # Add to true subtotal using DB price
-        subtotal += product.price * item.quantity
+        # Charge the sale price when the product is on sale. This rule must
+        # mirror the storefront (see CartContext), otherwise the customer is
+        # billed a different amount than the one shown at checkout.
+        unit_price = (
+            product.sale_price
+            if product.on_sale and product.sale_price is not None
+            else product.price
+        )
+
+        # Add to true subtotal using the effective DB price
+        subtotal += unit_price * item.quantity
         
         # Save reference for item creation
         db_items.append({
@@ -48,7 +57,7 @@ def checkout_cart(order_data: OrderCreate, db: Session = Depends(get_db)):
             "quantity": item.quantity,
             "size": item.size,
             "color": item.color,
-            "price_at_purchase": product.price
+            "price_at_purchase": unit_price
         })
 
     # 2. Compute final totals
