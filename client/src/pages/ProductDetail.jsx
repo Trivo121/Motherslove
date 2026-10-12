@@ -347,14 +347,8 @@ export default function ProductPage() {
                             <p className="mb-3">{product.description}</p>
                             <p><span className="text-[#2D3329]">Material:</span> {product.material}</p>
                         </Accordion>
-                        <Accordion title="Return &amp; Refund Policy">
-                            <p>We accept returns within 14 days of delivery for unused, unwashed items in their original packaging. Sale items are final sale. To start a return, email <span className="text-[#A96142]">m4motherslove@gmail.com</span> with your order number.</p>
-                        </Accordion>
-                        <Accordion title="Shipping Info">
-                            <ul className="space-y-1 list-none">
-                                <li>Standard delivery: 5–7 business days</li>
-                                <li>Express delivery: 2–3 business days</li>
-                            </ul>
+                        <Accordion title="Terms and Conditions">
+                            <p>There is no return, refund, or exchange option. Please select your size based on the chart properly; we deliver our goods with care. If the delivered goods are not in proper condition, please email us at <a href="mailto:m4motherslove@gmail.com" className="text-[#A96142] hover:underline font-medium">m4motherslove@gmail.com</a> — our team takes full responsibility.</p>
                         </Accordion>
                     </div>
                 </div>
