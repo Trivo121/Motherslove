@@ -147,7 +147,7 @@ const HomePage = () => {
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
                         color: categoryLabel(p.category)
                     }));
-                    setFeaturedProducts(mapped.slice(0, 4));
+                    setFeaturedProducts(mapped.filter(p => p.stock > 0).slice(0, 4));
                 }
             } catch (err) {
                 console.error(err);

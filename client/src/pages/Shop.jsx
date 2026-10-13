@@ -175,7 +175,8 @@ export default function AllProductsPage() {
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
                         color: categoryLabel(p.category)
                     }));
-                    setProducts(mapped);
+                    // Out-of-stock products are hidden from customers
+                    setProducts(mapped.filter(p => p.stock > 0));
                 }
             } catch (err) {
                 console.error("Failed to fetch products:", err);

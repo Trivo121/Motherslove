@@ -134,10 +134,16 @@ export default function ProductPage() {
                         badge: p.tags && p.tags.length > 0 ? p.tags[0] : '',
                         color: categoryLabel(p.category)
                     }));
-                    setAllProducts(mapped);
+                    // Out-of-stock products are hidden from customers
+                    const inStock = mapped.filter(p => p.stock > 0);
+                    setAllProducts(inStock);
 
-                    const found = mapped.find(p => String(p.id) === String(id));
-                    setProduct(found || mapped[0]);
+                    const requested = mapped.find(p => String(p.id) === String(id));
+                    if (requested && !(requested.stock > 0)) {
+                        setProduct(null); // direct link to an out-of-stock product
+                    } else {
+                        setProduct(requested || inStock[0]);
+                    }
                 }
             } catch (err) {
                 console.error(err);
