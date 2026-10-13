@@ -375,7 +375,16 @@ export default function ProductPage() {
                                     />
                                 </div>
                                 <p className="mt-3 font-avenir text-[#2D3329] text-sm group-hover:text-[#A96142] transition-colors">{p.name}</p>
-                                <p className="font-avenir text-[#A96142] text-sm mt-1">{p.priceFormatted || p.price}</p>
+                                <p className="font-avenir text-[#A96142] text-sm mt-1">
+                                    {p.on_sale && p.salePriceFormatted ? (
+                                        <>
+                                            <span className="line-through text-[#737373]/60 mr-2">{p.priceFormatted || p.price}</span>
+                                            <span>{p.salePriceFormatted}</span>
+                                        </>
+                                    ) : (
+                                        p.priceFormatted || p.price
+                                    )}
+                                </p>
                             </button>
                         );
                     })}

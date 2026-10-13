@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.PNG';
+import banner from '../assets/banner.png';
 import unique1 from '../assets/unique/Unique1.PNG';
 import unique2 from '../assets/unique/unique2.PNG';
 import unique3 from '../assets/unique/unique3.PNG';
@@ -186,7 +186,7 @@ const HomePage = () => {
                     heading for search engines and screen readers. */}
                 <h1 className="flex justify-center">
                     <img
-                        src={logo}
+                        src={banner}
                         alt="Mother's Love"
                         className="h-28 sm:h-36 md:h-44 lg:h-52 w-auto object-contain"
                     />
