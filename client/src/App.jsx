@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import HomePage from './pages/Home.jsx'
 import AuthModal from './pages/Login.jsx'
 import ShopPage from './pages/Shop.jsx'
@@ -41,6 +42,7 @@ function App() {
         <Route path="/profile" element={<UserProfile />} />
       </Routes>
       <AuthModal />
+      <Analytics />
     </CartProvider>
   )
 }
